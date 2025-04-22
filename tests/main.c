@@ -19,47 +19,8 @@ int main()
     lx_enable_debug_messages(1);
     
     lx_window* window = lx_window_new("Lux", 1920, 1080);
-
-    int success;
-    char info[512];
-
-    unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_source, NULL);
-    glCompileShader(vertex_shader);
-
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertex_shader, 512, NULL, info);
-        lx_error("opengl error: %s", info);
-    }
-
-    unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_source, NULL);
-    glCompileShader(fragment_shader);
-
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragment_shader, 512, NULL, info);
-        lx_error("opengl error: %s", info);
-    }
-
-    unsigned int shader_program = glCreateProgram();
-    glAttachShader(shader_program, vertex_shader);
-    glAttachShader(shader_program, fragment_shader);
-    glLinkProgram(shader_program);
-
-    glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shader_program, 512, NULL, info);
-        lx_error("opengl error: %s", info);
-    }
-
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
-
+    lx_shader shader = lx_shader_new(vertex_source, fragment_source);
+    
     float vertices[] =
     {
         -0.5f, -0.5f, 0.0f,
@@ -84,8 +45,8 @@ int main()
     while (!lx_window_has_received_quit_signal(window))
     {
         lx_window_update(window);
+        lx_shader_use(shader);
 
-        glUseProgram(shader_program);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -94,8 +55,8 @@ int main()
 
     glDeleteBuffers(1, &vbo);
     glDeleteVertexArrays(1, &vao);
-    glDeleteProgram(shader_program);
-
+    
+    lx_shader_delete(shader);
     lx_window_delete(window);
 
     return 0;

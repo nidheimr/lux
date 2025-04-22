@@ -6,8 +6,12 @@
 //  types
 //
 
-#define LX_APIENTRY __stdcall
-#define LX_APIENTRYP LX_APIENTRY *
+#ifdef _WIN32
+    #define LX_APIENTRY __stdcall
+#else
+    #define LX_APIENTRY
+#endif
+#define LX_APIENTRYP LX_APIENTRY*
 
 #define GL_ACTIVE_ATTRIBUTES 0x8B89
 #define GL_ACTIVE_ATTRIBUTE_MAX_LENGTH 0x8B8A
