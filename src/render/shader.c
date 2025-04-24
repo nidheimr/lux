@@ -61,12 +61,29 @@ unsigned int create_program(unsigned int vertex, unsigned int fragment)
 //  public
 //
 
-lx_shader lx_shader_new(const char* vertex_source, const char* fragment_source)
+lx_shader lx_shader_new(const char* vertex_file, const char* fragment_file)
 {
+    char* vertex_source = lx_read_file_as_str(vertex_file);
+    if (vertex_source == NULL)
+    {
+        lx_error("failed to obtain vertex shader source from %s", vertex_file);
+        return 0;
+    }
+
     unsigned int vertex = create_shader(GL_VERTEX_SHADER, vertex_source);
     if (populate_error_log(GL_VERTEX_SHADER, vertex))
     {
         lx_error("vertex shader compilation failed, opengl error: %s", error_log);
+        free(vertex_source);
+        return 0;
+    }
+
+    free(vertex_source);
+
+    char* fragment_source = lx_read_file_as_str(fragment_file);
+    if (fragment_source == NULL)
+    {
+        lx_error("failed to obtain fragment shader source from %s", fragment_file);
         return 0;
     }
 
@@ -74,8 +91,11 @@ lx_shader lx_shader_new(const char* vertex_source, const char* fragment_source)
     if (populate_error_log(GL_FRAGMENT_SHADER, fragment))
     {
         lx_error("fragment shader compilation failed, opengl error: %s", error_log);
+        free(fragment_source);
         return 0;
     }
+
+    free(fragment_source);
 
     unsigned int program = create_program(vertex, fragment);
     if (populate_error_log(SHADER_PROGRAM, program))
