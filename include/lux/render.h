@@ -20,7 +20,7 @@ int lx_window_has_received_quit_signal(lx_window* window);
 
 typedef unsigned int lx_shader;
 
-lx_shader lx_shader_new(const char* vertex_source, const char* fragment_source);
+lx_shader lx_shader_new(const char* vertex_file, const char* fragment_file);
 void lx_shader_delete(lx_shader shader);
 
 void lx_shader_use(lx_shader shader);
