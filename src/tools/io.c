@@ -7,33 +7,33 @@
 //  public
 //
 
-char* lx_read_file_as_str(const char* file_path)
+char* lx_read_file(const char* file)
 {
-    FILE* file = fopen(file_path, "rb");
+    FILE* f = fopen(file, "rb");
 
-    if (file == NULL)
+    if (f == NULL)
     {
-        lx_error("failed to open file: %s", file_path);
+        lx_error("failed to open file: %s", file);
         return NULL;
     }
 
-    fseek(file, 0, SEEK_END);
-    long length = ftell(file);
-    rewind(file);
+    fseek(f, 0, SEEK_END);
+    long length = ftell(f);
+    rewind(f);
 
     char* buffer = malloc(sizeof(char) * (length + 1));
     if (buffer == NULL)
     {
-        lx_error("failed to allocate space to read file: %s", file_path);
+        lx_error("failed to allocate space to read file: %s", file);
         fclose(NULL);
         return NULL;
     }
 
-    fread(buffer, 1, length, file);
+    fread(buffer, 1, length, f);
     buffer[length] = '\0';
 
-    fclose(file);
+    fclose(f);
 
-    lx_debug("obtained file as string: %s", file_path);
+    lx_debug("obtained file as string: %s", file);
     return buffer;
 }

@@ -2,19 +2,18 @@
 
 ## Overview
 
-Lux is a simple library that does the following:
-- allows the creation and management of a win32 window
-- creates and manages a 3.3 core opengl context
-- manually loads all opengl functions from 1.0 to 3.3
+Lux is a simple windowing and rendering library.
 
 It was written for educational purposes and is likely not very efficient.
 
 ## Building
 
-This project uses CMake.
+This project uses CMake. The only supported platforms for this project are Windows, and Linux (Wayland).
 
-Assuming you have CMake installed and some form of windows C compiler (such as MSVC), you can run the following commands inside the project directory:
+Assuming you have CMake and a C compiler, you can run the following commands inside the project directory:
 1. `cmake -S . -B build`
 2. `cmake --build build`
 
 The library will be placed inside `./bin/`.
+
+If you want to build the test executable, append `-D BUILD_TEST_EXECUTABLE=1` to the first CMake command.
