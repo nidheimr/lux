@@ -7,13 +7,13 @@
 //  public
 //
 
-char* lx_read_file(const char* file)
+const char* lx_read_file(const char* file)
 {
     FILE* f = fopen(file, "rb");
 
     if (f == NULL)
     {
-        lx_error("failed to open file: %s", file);
+        lx_set_last_error("failed to open file: %s", file);
         return NULL;
     }
 
@@ -24,7 +24,7 @@ char* lx_read_file(const char* file)
     char* buffer = malloc(sizeof(char) * (length + 1));
     if (buffer == NULL)
     {
-        lx_error("failed to allocate space to read file: %s", file);
+        lx_set_last_error("failed to allocate space to read file: %s", file);
         fclose(NULL);
         return NULL;
     }
