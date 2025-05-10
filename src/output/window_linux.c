@@ -254,6 +254,14 @@ lx_window* lx_window_create(const char* title, int width, int height)
     lx_debug("created egl context");
 
     window->egl_window = wl_egl_window_create(window->wl_surface, width, height);
+    if (!window->egl_window)
+    {
+        lx_set_last_error("failed to create egl window");
+        lx_window_destroy(window);
+        return NULL;
+    }
+    lx_debug("created egl window");
+
     window->egl_surface = eglCreateWindowSurface(window->egl_display, config, (EGLNativeWindowType)window->egl_window, NULL);
     if (window->egl_surface == EGL_NO_SURFACE)
     {
@@ -284,37 +292,67 @@ lx_window* lx_window_create(const char* title, int width, int height)
 void lx_window_destroy(lx_window* window)
 {
     if (window->egl_surface != NULL)
+    {
         eglDestroySurface(window->egl_display, window->egl_surface);
+        lx_debug("destroyed egl surface");
+    }
 
     if (window->egl_context != NULL)
+    {
         eglDestroyContext(window->egl_display, window->egl_context);
+        lx_debug("destroyed egl context");
+    }
 
     if (window->egl_display != NULL)
+    {
         eglTerminate(window->egl_display);
+        lx_debug("terminated egl");
+    }
 
     if (window->egl_window != NULL)
+    {
         wl_egl_window_destroy(window->egl_window);
+        lx_debug("destroyed egl window");
+    }
 
     if (window->toplevel != NULL)
+    {
         xdg_toplevel_destroy(window->toplevel);
+        lx_debug("destroyed xdg toplevel");
+    }
 
     if (window->xdg_surface != NULL)
+    {
         xdg_surface_destroy(window->xdg_surface);
+        lx_debug("destroyed xdg surface");
+    }
 
     if (window->wl_surface != NULL)
+    {
         wl_surface_destroy(window->wl_surface);
+        lx_debug("destroyed wayland surface");
+    }
 
     if (window->wm_base != NULL)
+    {
         xdg_wm_base_destroy(window->wm_base);
+        lx_debug("destroyed xdg wm base");
+    }
 
     if (window->compositor != NULL)
+    {
         wl_compositor_destroy(window->compositor);
+        lx_debug("destroyed wayland compositor");
+    }
 
     if (window->wl_display != NULL)
+    {
         wl_display_disconnect(window->wl_display);
+        lx_debug("disconnected from wayland display");
+    }
 
     free(window);
-    lx_debug("destroyed lx_window");
+    lx_debug("deallocated lx_window");
 }
 
 void lx_window_update(lx_window* window)
