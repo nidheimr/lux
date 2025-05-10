@@ -7,7 +7,11 @@
 //  types
 //
 
-#define LX_APIENTRY
+#ifdef _WIN32
+    #define LX_APIENTRY __stdcall
+#else
+    #define LX_APIENTRY
+#endif
 #define LX_APIENTRYP LX_APIENTRY*
 
 #define GL_ACTIVE_ATTRIBUTES 0x8B89
