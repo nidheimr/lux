@@ -1,9 +1,5 @@
 #pragma once
 
-//
-//  convenience includes
-//
-
-#include "lux/bindings.h"
+#include "lux/gl.h"
 #include "lux/output.h"
 #include "lux/tools.h"

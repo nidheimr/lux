@@ -1,6 +1,6 @@
 #include "lux/output.h"
 #include "lux/tools.h"
-#include "lux/bindings.h"
+#include "lux/gl.h"
 
 #include "../xdg-shell-client-protocol.h"
 
@@ -237,9 +237,6 @@ lx_window* lx_window_create(const char* title, int width, int height)
 
     EGLint context_attribs[] =
     {
-        EGL_CONTEXT_MAJOR_VERSION, 3,
-        EGL_CONTEXT_MINOR_VERSION, 3,
-        EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
         EGL_NONE
     };
     eglBindAPI(EGL_OPENGL_API);
@@ -279,8 +276,13 @@ lx_window* lx_window_create(const char* title, int width, int height)
     }
     lx_debug("made egl context current");
 
-    lx_load_gl_procs();
-    lx_debug("loaded opengl functions up to 3.3");
+    int version = lx_load_gl_procs();
+    if (version == 0)
+    {
+        lx_window_destroy(window);
+        return NULL;
+    }
+    lx_debug("loaded opengl version %d.%d", (version / 10000), (version % 10000));
 
     glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

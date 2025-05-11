@@ -6,9 +6,14 @@ Lux is a simple windowing and rendering library.
 
 It was written for educational purposes and is likely not very efficient.
 
+## Current To Do
+
+- Generate `xdg-shell-client-protocol.h` and `xdg-shell-protocol.c` on build.
+- Clean up window/xdg/egl creation for Linux (Wayland).
+
 ## Building
 
-This project uses CMake. The only supported platforms for this project are Windows, and Linux (Wayland).
+This project uses CMake. The only supported platforms for this project are: Linux (Wayland).
 
 Assuming you have CMake and a C compiler, you can run the following commands inside the project directory:
 1. `cmake -S . -B build`
