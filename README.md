@@ -9,7 +9,6 @@ It was written for educational purposes and is likely not very efficient.
 ## Current To Do
 
 - Generate `xdg-shell-client-protocol.h` and `xdg-shell-protocol.c` on build.
-- Clean up window/xdg/egl creation for Linux (Wayland).
 
 ## Building
 
