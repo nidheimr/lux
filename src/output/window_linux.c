@@ -2,7 +2,7 @@
 #include "lux/tools.h"
 #include "lux/gl.h"
 
-#include "../xdg-shell-client-protocol.h"
+#include "../platform/xdg_linux.h"
 
 #include <stdio.h>
 #include <stdlib.h>
