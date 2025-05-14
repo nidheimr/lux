@@ -1,6 +1,8 @@
 #include "lux/gl.h"
 #include "lux/tools.h"
 
+#include "../tools/debug.h"
+
 #include <stdio.h>
 
 #ifdef _WIN32
@@ -16,27 +18,27 @@
 //  private
 //
 
-int v1_0 = 0;
-int v1_1 = 0;
-int v1_2 = 0;
-int v1_3 = 0;
-int v1_4 = 0;
-int v1_5 = 0;
-int v2_0 = 0;
-int v2_1 = 0;
-int v3_0 = 0;
-int v3_1 = 0;
-int v3_2 = 0;
-int v3_3 = 0;
-int v4_0 = 0;
-int v4_1 = 0;
-int v4_2 = 0;
-int v4_3 = 0;
-int v4_4 = 0;
-int v4_5 = 0;
-int v4_6 = 0;
+static int v1_0 = 0;
+static int v1_1 = 0;
+static int v1_2 = 0;
+static int v1_3 = 0;
+static int v1_4 = 0;
+static int v1_5 = 0;
+static int v2_0 = 0;
+static int v2_1 = 0;
+static int v3_0 = 0;
+static int v3_1 = 0;
+static int v3_2 = 0;
+static int v3_3 = 0;
+static int v4_0 = 0;
+static int v4_1 = 0;
+static int v4_2 = 0;
+static int v4_3 = 0;
+static int v4_4 = 0;
+static int v4_5 = 0;
+static int v4_6 = 0;
 
-int query_supported_gl_version()
+static int query_supported_gl_version()
 {
     GLubyte* version = lx_glGetString(GL_VERSION);
     if (!version) return 0;
@@ -120,7 +122,7 @@ PFNGLTEXPARAMETERIPROC lx_glTexParameteri = NULL;
 PFNGLTEXPARAMETERIVPROC lx_glTexParameteriv = NULL;
 PFNGLVIEWPORTPROC lx_glViewport = NULL;
 
-void load_1_0()
+static void load_1_0()
 {
     if (!v1_0) return;
     lx_glBlendFunc = (PFNGLBLENDFUNCPROC) load_proc("glBlendFunc");
@@ -188,7 +190,7 @@ PFNGLPOLYGONOFFSETPROC lx_glPolygonOffset = NULL;
 PFNGLTEXSUBIMAGE1DPROC lx_glTexSubImage1D = NULL;
 PFNGLTEXSUBIMAGE2DPROC lx_glTexSubImage2D = NULL;
 
-void load_1_1()
+static void load_1_1()
 {
     if (!v1_1) return;
     lx_glBindTexture = (PFNGLBINDTEXTUREPROC) load_proc("glBindTexture");
@@ -212,7 +214,7 @@ PFNGLDRAWRANGEELEMENTSPROC lx_glDrawRangeElements = NULL;
 PFNGLTEXIMAGE3DPROC lx_glTexImage3D = NULL;
 PFNGLTEXSUBIMAGE3DPROC lx_glTexSubImage3D = NULL;
 
-void load_1_2()
+static void load_1_2()
 {
     if (!v1_2) return;
     lx_glCopyTexSubImage3D = (PFNGLCOPYTEXSUBIMAGE3DPROC) load_proc("glCopyTexSubImage3D");
@@ -231,7 +233,7 @@ PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC lx_glCompressedTexSubImage3D = NULL;
 PFNGLGETCOMPRESSEDTEXIMAGEPROC lx_glGetCompressedTexImage = NULL;
 PFNGLSAMPLECOVERAGEPROC lx_glSampleCoverage = NULL;
 
-void load_1_3()
+static void load_1_3()
 {
     if (!v1_3) return;
     lx_glActiveTexture = (PFNGLACTIVETEXTUREPROC) load_proc("glActiveTexture");
@@ -255,7 +257,7 @@ PFNGLPOINTPARAMETERFVPROC lx_glPointParameterfv = NULL;
 PFNGLPOINTPARAMETERIPROC lx_glPointParameteri = NULL;
 PFNGLPOINTPARAMETERIVPROC lx_glPointParameteriv = NULL;
 
-void load_1_4()
+static void load_1_4()
 {
     if (!v1_4) return;
     lx_glBlendColor = (PFNGLBLENDCOLORPROC) load_proc("glBlendColor");
@@ -289,7 +291,7 @@ PFNGLISQUERYPROC lx_glIsQuery = NULL;
 PFNGLMAPBUFFERPROC lx_glMapBuffer = NULL;
 PFNGLUNMAPBUFFERPROC lx_glUnmapBuffer = NULL;
 
-void load_1_5()
+static void load_1_5()
 {
     if (!v1_5) return;
     lx_glBeginQuery = (PFNGLBEGINQUERYPROC) load_proc("glBeginQuery");
@@ -407,7 +409,7 @@ PFNGLVERTEXATTRIB4UIVPROC lx_glVertexAttrib4uiv = NULL;
 PFNGLVERTEXATTRIB4USVPROC lx_glVertexAttrib4usv = NULL;
 PFNGLVERTEXATTRIBPOINTERPROC lx_glVertexAttribPointer = NULL;
 
-void load_2_0()
+static void load_2_0()
 {
     if (!v2_0) return;
     lx_glAttachShader = (PFNGLATTACHSHADERPROC) load_proc("glAttachShader");
@@ -512,7 +514,7 @@ PFNGLUNIFORMMATRIX3X4FVPROC lx_glUniformMatrix3x4fv = NULL;
 PFNGLUNIFORMMATRIX4X2FVPROC lx_glUniformMatrix4x2fv = NULL;
 PFNGLUNIFORMMATRIX4X3FVPROC lx_glUniformMatrix4x3fv = NULL;
 
-void load_2_1()
+static void load_2_1()
 {
     if (!v2_1) return;
     lx_glUniformMatrix2x3fv = (PFNGLUNIFORMMATRIX2X3FVPROC) load_proc("glUniformMatrix2x3fv");
@@ -608,7 +610,7 @@ PFNGLVERTEXATTRIBI4UIVPROC lx_glVertexAttribI4uiv = NULL;
 PFNGLVERTEXATTRIBI4USVPROC lx_glVertexAttribI4usv = NULL;
 PFNGLVERTEXATTRIBIPOINTERPROC lx_glVertexAttribIPointer = NULL;
 
-void load_3_0()
+static void load_3_0()
 {
     if (!v3_0) return;
     lx_glBeginConditionalRender = (PFNGLBEGINCONDITIONALRENDERPROC) load_proc("glBeginConditionalRender");
@@ -710,7 +712,7 @@ PFNGLPRIMITIVERESTARTINDEXPROC lx_glPrimitiveRestartIndex = NULL;
 PFNGLTEXBUFFERPROC lx_glTexBuffer = NULL;
 PFNGLUNIFORMBLOCKBINDINGPROC lx_glUniformBlockBinding = NULL;
 
-void load_3_1()
+static void load_3_1()
 {
     if (!v3_1) return;
     lx_glCopyBufferSubData = (PFNGLCOPYBUFFERSUBDATAPROC) load_proc("glCopyBufferSubData");
@@ -747,7 +749,7 @@ PFNGLTEXIMAGE2DMULTISAMPLEPROC lx_glTexImage2DMultisample = NULL;
 PFNGLTEXIMAGE3DMULTISAMPLEPROC lx_glTexImage3DMultisample = NULL;
 PFNGLWAITSYNCPROC lx_glWaitSync = NULL;
 
-void load_3_2()
+static void load_3_2()
 {
     if (!v3_2) return;
     lx_glClientWaitSync = (PFNGLCLIENTWAITSYNCPROC) load_proc("glClientWaitSync");
@@ -800,7 +802,7 @@ PFNGLVERTEXATTRIBP3UIVPROC lx_glVertexAttribP3uiv = NULL;
 PFNGLVERTEXATTRIBP4UIPROC lx_glVertexAttribP4ui = NULL;
 PFNGLVERTEXATTRIBP4UIVPROC lx_glVertexAttribP4uiv = NULL;
 
-void load_3_3()
+static void load_3_3()
 {
     if (!v3_3) return;
     lx_glBindFragDataLocationIndexed = (PFNGLBINDFRAGDATALOCATIONINDEXEDPROC) load_proc("glBindFragDataLocationIndexed");
@@ -880,7 +882,7 @@ PFNGLUNIFORMMATRIX4X2DVPROC lx_glUniformMatrix4x2dv = NULL;
 PFNGLUNIFORMMATRIX4X3DVPROC lx_glUniformMatrix4x3dv = NULL;
 PFNGLUNIFORMSUBROUTINESUIVPROC lx_glUniformSubroutinesuiv = NULL;
 
-void load_4_0()
+static void load_4_0()
 {
     if (!v4_0) return;
     lx_glBeginQueryIndexed = (PFNGLBEGINQUERYINDEXEDPROC) load_proc("glBeginQueryIndexed");
@@ -1020,7 +1022,7 @@ PFNGLVIEWPORTARRAYVPROC lx_glViewportArrayv = NULL;
 PFNGLVIEWPORTINDEXEDFPROC lx_glViewportIndexedf = NULL;
 PFNGLVIEWPORTINDEXEDFVPROC lx_glViewportIndexedfv = NULL;
 
-void load_4_1()
+static void load_4_1()
 {
     if (!v4_1) return;
     lx_glActiveShaderProgram = (PFNGLACTIVESHADERPROGRAMPROC) load_proc("glActiveShaderProgram");
@@ -1126,7 +1128,7 @@ PFNGLTEXSTORAGE1DPROC lx_glTexStorage1D = NULL;
 PFNGLTEXSTORAGE2DPROC lx_glTexStorage2D = NULL;
 PFNGLTEXSTORAGE3DPROC lx_glTexStorage3D = NULL;
 
-void load_4_2()
+static void load_4_2()
 {
     if (!v4_2) return;
     lx_glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC) load_proc("glBindImageTexture");
@@ -1187,7 +1189,7 @@ PFNGLVERTEXATTRIBIFORMATPROC lx_glVertexAttribIFormat = NULL;
 PFNGLVERTEXATTRIBLFORMATPROC lx_glVertexAttribLFormat = NULL;
 PFNGLVERTEXBINDINGDIVISORPROC lx_glVertexBindingDivisor = NULL;
 
-void load_4_3()
+static void load_4_3()
 {
     if (!v4_3) return;
     lx_glBindVertexBuffer = (PFNGLBINDVERTEXBUFFERPROC) load_proc("glBindVertexBuffer");
@@ -1245,7 +1247,7 @@ PFNGLBUFFERSTORAGEPROC lx_glBufferStorage = NULL;
 PFNGLCLEARTEXIMAGEPROC lx_glClearTexImage = NULL;
 PFNGLCLEARTEXSUBIMAGEPROC lx_glClearTexSubImage = NULL;
 
-void load_4_4()
+static void load_4_4()
 {
     if (!v4_4) return;
     lx_glBindBuffersBase = (PFNGLBINDBUFFERSBASEPROC) load_proc("glBindBuffersBase");
@@ -1370,7 +1372,7 @@ PFNGLVERTEXARRAYELEMENTBUFFERPROC lx_glVertexArrayElementBuffer = NULL;
 PFNGLVERTEXARRAYVERTEXBUFFERPROC lx_glVertexArrayVertexBuffer = NULL;
 PFNGLVERTEXARRAYVERTEXBUFFERSPROC lx_glVertexArrayVertexBuffers = NULL;
 
-void load_4_5()
+static void load_4_5()
 {
     if (!v4_5) return;
     lx_glBindTextureUnit = (PFNGLBINDTEXTUREUNITPROC) load_proc("glBindTextureUnit");
@@ -1490,7 +1492,7 @@ PFNGLMULTIDRAWELEMENTSINDIRECTCOUNTPROC lx_glMultiDrawElementsIndirectCount = NU
 PFNGLPOLYGONOFFSETCLAMPPROC lx_glPolygonOffsetClamp = NULL;
 PFNGLSPECIALIZESHADERPROC lx_glSpecializeShader = NULL;
 
-void load_4_6()
+static void load_4_6()
 {
     if (!v4_6) return;
     lx_glMultiDrawArraysIndirectCount = (PFNGLMULTIDRAWARRAYSINDIRECTCOUNTPROC) load_proc("glMultiDrawArraysIndirectCount");
@@ -1503,7 +1505,7 @@ void load_4_6()
 //  public
 //
 
-int lx_load_gl_procs()
+int load_gl_procs()
 {
     lx_glGetString = (PFNGLGETSTRINGPROC) load_proc("glGetString");
     if (!lx_glGetString)

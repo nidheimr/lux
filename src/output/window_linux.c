@@ -3,6 +3,8 @@
 #include "lux/gl.h"
 
 #include "../platform/xdg_linux.h"
+#include "../gl/loader.h"
+#include "../tools/debug.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,7 +53,7 @@ struct _lx_window
 //  private - callbacks
 //
 
-void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
+static void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
 {
     lx_window* window = data;
 
@@ -62,27 +64,27 @@ void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name,
         window->xdg_wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, version);
 }
 
-void wl_registry_remove(void* data, struct wl_registry* registry, uint32_t name)
+static void wl_registry_remove(void* data, struct wl_registry* registry, uint32_t name)
 {
 }
 
-void xdg_wm_base_ping(void* data, struct xdg_wm_base* wm_base, uint32_t serial)
+static void xdg_wm_base_ping(void* data, struct xdg_wm_base* wm_base, uint32_t serial)
 {
     xdg_wm_base_pong(wm_base, serial);
 }
 
-void xdg_surface_configure(void* data, struct xdg_surface* surface, uint32_t serial)
+static void xdg_surface_configure(void* data, struct xdg_surface* surface, uint32_t serial)
 {
     xdg_surface_ack_configure(surface, serial);
 }
 
-void xdg_toplevel_close(void* data, struct xdg_toplevel* toplevel)
+static void xdg_toplevel_close(void* data, struct xdg_toplevel* toplevel)
 {
     lx_window* window = data;
     window->is_alive = 0;
 }
 
-void xdg_toplevel_configure(void* data, struct xdg_toplevel* toplevel, int32_t width, int32_t height, struct wl_array* states)
+static void xdg_toplevel_configure(void* data, struct xdg_toplevel* toplevel, int32_t width, int32_t height, struct wl_array* states)
 {
     if (width <= 0 || height <= 0)
         return;
@@ -92,11 +94,11 @@ void xdg_toplevel_configure(void* data, struct xdg_toplevel* toplevel, int32_t w
     glViewport(0, 0, width, height);
 }
 
-void xdg_toplevel_configure_bounds(void* data, struct xdg_toplevel* toplevel, int32_t width, int32_t height)
+static void xdg_toplevel_configure_bounds(void* data, struct xdg_toplevel* toplevel, int32_t width, int32_t height)
 {
 }
 
-void xdg_toplevel_wm_capabilities(void* data, struct xdg_toplevel* toplevel, struct wl_array* capabilities)
+static void xdg_toplevel_wm_capabilities(void* data, struct xdg_toplevel* toplevel, struct wl_array* capabilities)
 {
 }
 
@@ -104,22 +106,22 @@ void xdg_toplevel_wm_capabilities(void* data, struct xdg_toplevel* toplevel, str
 //  private - listeners
 //
 
-struct wl_registry_listener wl_listener_registry = {
+static struct wl_registry_listener wl_listener_registry = {
     .global = wl_registry_global,
     .global_remove = wl_registry_remove
 };
 
-struct xdg_wm_base_listener xdg_listener_wm_base =
+static struct xdg_wm_base_listener xdg_listener_wm_base =
 {
     .ping = xdg_wm_base_ping
 };
 
-struct xdg_surface_listener xdg_listener_surface =
+static struct xdg_surface_listener xdg_listener_surface =
 {
     .configure = xdg_surface_configure
 };
 
-struct xdg_toplevel_listener xdg_listener_toplevel =
+static struct xdg_toplevel_listener xdg_listener_toplevel =
 {
     .close = xdg_toplevel_close,
     .configure = xdg_toplevel_configure,
@@ -131,7 +133,7 @@ struct xdg_toplevel_listener xdg_listener_toplevel =
 //  private
 //
 
-const char* create_wayland_window(lx_window* window)
+static const char* create_wayland_window(lx_window* window)
 {
     window->wl_display = wl_display_connect(NULL);
     if (!window->wl_display)
@@ -163,7 +165,7 @@ const char* create_wayland_window(lx_window* window)
     return NULL;
 }
 
-void destroy_wayland_window(lx_window* window)
+static void destroy_wayland_window(lx_window* window)
 {
     if (window->wl_surface != NULL)
     {
@@ -190,7 +192,7 @@ void destroy_wayland_window(lx_window* window)
     }
 }
 
-const char* create_xdg_shell(lx_window* window)
+static const char* create_xdg_shell(lx_window* window)
 {
     if (!window->xdg_wm_base) // set by wl_display_roundtrip and the registry_global callback
         return "failed to get xdg wm base";
@@ -217,7 +219,7 @@ const char* create_xdg_shell(lx_window* window)
     return NULL;
 }
 
-void destroy_xdg_shell(lx_window* window)
+static void destroy_xdg_shell(lx_window* window)
 {
     if (window->xdg_toplevel != NULL)
     {
@@ -238,7 +240,7 @@ void destroy_xdg_shell(lx_window* window)
     }
 }
 
-const char* create_egl_surface(lx_window* window)
+static const char* create_egl_surface(lx_window* window)
 {
     window->egl_display = eglGetDisplay((EGLNativeDisplayType)window->wl_display); 
     if (window->egl_display == EGL_NO_DISPLAY)
@@ -294,7 +296,7 @@ const char* create_egl_surface(lx_window* window)
     return NULL;
 }
 
-void destroy_egl_surface(lx_window* window)
+static void destroy_egl_surface(lx_window* window)
 {
     if (window->egl_surface != NULL)
     {
@@ -327,7 +329,17 @@ void destroy_egl_surface(lx_window* window)
 
 lx_window* lx_window_create(const char* title, int width, int height)
 {
-    lx_window* window = malloc(sizeof(lx_window));
+    PARAM_GUARD(title == NULL, ("could not create window with null title"), NULL);
+    PARAM_GUARD(width < 1 || width > 7680 || height < 1 || height > 4320, ("could not create window with improper dimensions, expected 1x1 to 7680x4320 but got %dx%d", width, height), NULL);
+
+    static lx_window* window = NULL;
+    if (window != NULL)
+    {
+        lx_set_last_error("failed to create window because it already exists");
+        return NULL;
+    }
+
+    window = malloc(sizeof(lx_window));
     if (!window)
     {
         lx_set_last_error("failed to allocate window struct");
@@ -364,7 +376,8 @@ lx_window* lx_window_create(const char* title, int width, int height)
         return NULL;
     }
 
-    int version = lx_load_gl_procs();
+    int version = load_gl_procs();
+    version = load_gl_procs();
     if (version == 0)
     {
         lx_window_destroy(window);
@@ -380,6 +393,8 @@ lx_window* lx_window_create(const char* title, int width, int height)
 
 void lx_window_destroy(lx_window* window)
 {
+    PARAM_GUARD(window == NULL, ("could not destroy null window"));
+
     destroy_egl_surface(window);
     destroy_xdg_shell(window);
     destroy_wayland_window(window);
@@ -390,16 +405,20 @@ void lx_window_destroy(lx_window* window)
 
 void lx_window_update(lx_window* window)
 {
+    PARAM_GUARD(window == NULL, ("could not update null window"));
+    
     wl_display_dispatch(window->wl_display);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void lx_window_render(lx_window* window)
 {
+    PARAM_GUARD(window == NULL, ("could not render null window"));
     eglSwapBuffers(window->egl_display, window->egl_surface);
 }
 
 int lx_window_is_alive(lx_window* window)
 {
+    PARAM_GUARD(window == NULL, ("could not determine alive state of null window"), 0);
     return window->is_alive;
 }

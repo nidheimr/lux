@@ -1,5 +1,7 @@
 #include "lux/tools.h"
 
+#include "debug.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,6 +11,8 @@
 
 const char* lx_read_file(const char* file)
 {
+    PARAM_GUARD(file == NULL, ("cannot read null file"), NULL);
+
     FILE* f = fopen(file, "rb");
 
     if (f == NULL)

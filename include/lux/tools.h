@@ -1,5 +1,8 @@
 #pragma once
 
+#include "external.h"
+LX_BEGIN_HEADER
+
 #include <stddef.h>
 
 //
@@ -76,3 +79,5 @@ void lx_print_last_error();
  * @return A pointer to the char* buffer or NULL if failed.
  */
 const char* lx_read_file(const char* file);
+
+LX_END_HEADER

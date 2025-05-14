@@ -1,5 +1,8 @@
 #pragma once
 
+#include "external.h"
+LX_BEGIN_HEADER
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -4140,17 +4143,4 @@ typedef void (LX_GL_API_PTR PFNGLSPECIALIZESHADERPROC)(GLuint shader, const GLch
 extern PFNGLSPECIALIZESHADERPROC lx_glSpecializeShader;
 #define glSpecializeShader lx_glSpecializeShader
 
-//
-//  loader
-//
-
-/**
- * @brief Loads all OpenGL functions from 1.0 up to the maximum supported
- * version detected at runtime.
- *
- * This is automatically called upon window creation and really shouldn't be
- * called manually.
- *
- * @return The version of OpenGL used, or 0 for failure.
- */
-int lx_load_gl_procs();
+LX_END_HEADER

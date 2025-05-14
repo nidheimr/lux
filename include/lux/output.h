@@ -1,5 +1,8 @@
 #pragma once
 
+#include "external.h"
+LX_BEGIN_HEADER
+
 //
 //  window
 //
@@ -60,3 +63,5 @@ void lx_window_render(lx_window* window);
  * means that a quit signal has been received and the window should terminate.
  */
 int lx_window_is_alive(lx_window* window);
+
+LX_END_HEADER

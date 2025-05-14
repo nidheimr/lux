@@ -6,7 +6,7 @@ int main()
 {
     lx_enable_debug_messages(1);
 
-    lx_window* window = lx_window_create("Lux Window", 1920, 1080);
+    lx_window* window = lx_window_create("Lux Window", 1920, 1080); 
 
     glClearColor(1.0f, 0.82f, 0.86f, 1.0f);
 
