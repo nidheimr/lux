@@ -2,7 +2,7 @@
 
 ## Overview
 
-Lux is a library that handles windowing, input, and rendering.
+Lux is a library that handles windowing, input, and rendering (OpenGL loader).
 
 It was written for educational purposes and is likely not very efficient.
 
