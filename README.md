@@ -2,7 +2,7 @@
 
 ## Overview
 
-Lux is a simple windowing and rendering library.
+Lux is a library that handles windowing, input, and rendering.
 
 It was written for educational purposes and is likely not very efficient.
 
