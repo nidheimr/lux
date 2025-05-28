@@ -385,7 +385,7 @@ lx_window* lx_window_create(const char* title, int width, int height)
     }
     lx_debug("loaded opengl version %d.%d", (version / 10000), (version % 10000));
 
-    glViewport(0, 0, window->width, window->height);
+    glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     return window;

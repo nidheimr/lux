@@ -61,7 +61,7 @@ target_include_directories(lux PRIVATE
 
 if(BUILD_TEST_EXECUTABLE)
 
-    file(GLOB_RECURSE test_files CONFIGURE_DEPENDS tests/*.c)
+    file(GLOB_RECURSE test_files CONFIGURE_DEPENDS tests/src/*.c)
     add_executable(tests ${test_files})
 
     target_link_libraries(tests PRIVATE
