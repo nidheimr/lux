@@ -52,5 +52,5 @@ set_target_properties(lux PROPERTIES
 )
 
 target_include_directories(lux PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_LIST_DIR}/include
 )
