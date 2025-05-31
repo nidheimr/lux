@@ -54,27 +54,3 @@ set_target_properties(lux PROPERTIES
 target_include_directories(lux PRIVATE
     ${CMAKE_SOURCE_DIR}/include
 )
-
-#
-#   tests
-#
-
-if(BUILD_TEST_EXECUTABLE)
-
-    file(GLOB_RECURSE test_files CONFIGURE_DEPENDS tests/src/*.c)
-    add_executable(tests ${test_files})
-
-    target_link_libraries(tests PRIVATE
-        lux
-    )
-
-    target_include_directories(tests PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
-    )
-
-    set_target_properties(tests PROPERTIES
-        C_STANDARD 17
-        RUNTIME_OUTPUT_DIRECTORY ${common_bin_dir}
-    )
-
-endif()
