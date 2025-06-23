@@ -18,6 +18,17 @@ LX_BEGIN_HEADER
 void lx_enable_debug_messages(int enabled);
 
 /**
+ * @brief Sets whether error messages should also be printed when they are set.
+ * 
+ * Regular behaviour would be using `lx_get_last_error` or `lx_print_last_error`
+ * to get/print the last error that occured, but this is a convenience toggle
+ * to automatically run `lx_print_last_error` whenever a new error occures.
+ *
+ * @param enabled 1 for enabled, 0 for disabled.
+ */
+void lx_print_error_on_occurance(int enabled);
+
+/**
  * @brief Sets the last error produced and stores it for retrieval by
  * `lx_get_last_error`.
  *

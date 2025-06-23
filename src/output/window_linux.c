@@ -5,23 +5,22 @@
 #include "../platform/xdg_linux.h"
 #include "../gl/loader.h"
 #include "../tools/debug.h"
+#include "../input/querying.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <unistd.h>
 #include <EGL/egl.h>
-#include <wayland-client-core.h>
-#include <wayland-client-protocol.h>
 #include <wayland-client.h>
-#include <wayland-egl-core.h>
 #include <wayland-egl.h>
 
 //
 //  private - definitions
 //
 
-struct _lx_window
+typedef struct _lx_window
 {
     // wayland window
     struct wl_display* wl_display;
@@ -40,6 +39,11 @@ struct _lx_window
     struct wl_egl_window* egl_window;
     EGLSurface* egl_surface;
 
+    // wayland input
+    struct wl_seat* wl_seat;
+    struct wl_keyboard* wl_keyboard;
+    struct wl_pointer* wl_pointer;
+
     // static properties
     char title[32];
     int width;
@@ -47,11 +51,18 @@ struct _lx_window
     
     // dynamic properties
     int is_alive;
-};
+}
+lx_window;
+
+static lx_window* window = NULL;
 
 //
 //  private - callbacks
 //
+
+// necessary forward declare
+static struct wl_keyboard_listener wl_listener_keyboard;
+static struct wl_pointer_listener wl_listener_pointer;
 
 static void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
 {
@@ -62,11 +73,21 @@ static void wl_registry_global(void* data, struct wl_registry* registry, uint32_
 
     if (strcmp(interface, "xdg_wm_base") == 0)
         window->xdg_wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, version);
+
+    if (strcmp(interface, "wl_seat") == 0)
+    {
+        window->wl_seat = wl_registry_bind(registry, name, &wl_seat_interface, version);
+        
+        window->wl_keyboard = wl_seat_get_keyboard(window->wl_seat);
+        wl_keyboard_add_listener(window->wl_keyboard, &wl_listener_keyboard, NULL);
+
+        window->wl_pointer = wl_seat_get_pointer(window->wl_seat);
+        wl_pointer_add_listener(window->wl_pointer, &wl_listener_pointer, NULL);
+    }
 }
 
-static void wl_registry_remove(void* data, struct wl_registry* registry, uint32_t name)
-{
-}
+static void wl_registry_global_remove(void* data, struct wl_registry* registry, uint32_t name)
+{}
 
 static void xdg_wm_base_ping(void* data, struct xdg_wm_base* wm_base, uint32_t serial)
 {
@@ -95,20 +116,78 @@ static void xdg_toplevel_configure(void* data, struct xdg_toplevel* toplevel, in
 }
 
 static void xdg_toplevel_configure_bounds(void* data, struct xdg_toplevel* toplevel, int32_t width, int32_t height)
-{
-}
+{}
 
 static void xdg_toplevel_wm_capabilities(void* data, struct xdg_toplevel* toplevel, struct wl_array* capabilities)
+{}
+
+static void wl_keyboard_keymap(void* data, struct wl_keyboard* kb, uint32_t format, int fd, uint32_t size)
 {
+    close(fd);
 }
+
+static void wl_keyboard_key(void* data, struct wl_keyboard* kb, uint32_t serial, uint32_t time, uint32_t key, uint32_t state)
+{
+    inp_update_key(key, state);
+}
+
+static void wl_keyboard_repeat_info(void* data, struct wl_keyboard* kb, int32_t rate, int32_t delay)
+{}
+
+static void wl_keyboard_enter(void* data, struct wl_keyboard* kb, uint32_t serial, struct wl_surface* surface, struct wl_array* keys)
+{}
+
+static void wl_keyboard_leave(void* data, struct wl_keyboard* kb, uint32_t serial, struct wl_surface* surface)
+{}
+
+static void wl_keyboard_modifiers(void* data, struct wl_keyboard* kb, uint32_t serial, uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group)
+{}
+
+static void wl_pointer_motion(void* data, struct wl_pointer* ptr, uint32_t time, wl_fixed_t sx, wl_fixed_t sy)
+{
+    inp_update_mouse_pos(wl_fixed_to_double(sx), wl_fixed_to_double(sy));
+}
+
+static void wl_pointer_button(void* data, struct wl_pointer* ptr, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
+{
+    inp_update_mouse_button(button, state);
+}
+
+static void wl_pointer_axis(void* data, struct wl_pointer* ptr, uint32_t time, uint32_t axis, wl_fixed_t value)
+{}
+
+static void wl_pointer_axis_discrete(void* data, struct wl_pointer* ptr, uint32_t axis, int32_t discrete)
+{}
+
+static void wl_pointer_axis_relative_direction(void* data, struct wl_pointer* ptr, uint32_t axis, uint32_t direction)
+{}
+
+static void wl_pointer_axis_source(void* data, struct wl_pointer* ptr, uint32_t source)
+{}
+
+static void wl_pointer_axis_stop(void* data, struct wl_pointer* ptr, uint32_t time, uint32_t axis)
+{}
+
+static void wl_pointer_axis_value120(void* data, struct wl_pointer* ptr, uint32_t axis, int32_t value120)
+{}
+
+static void wl_pointer_enter(void* data, struct wl_pointer* ptr, uint32_t serial, struct wl_surface* surface, wl_fixed_t sx, wl_fixed_t sy)
+{}
+
+static void wl_pointer_leave(void* data, struct wl_pointer* ptr, uint32_t serial, struct wl_surface* surface)
+{}
+
+static void wl_pointer_frame(void* data, struct wl_pointer* ptr)
+{}
 
 //
 //  private - listeners
 //
 
-static struct wl_registry_listener wl_listener_registry = {
+static struct wl_registry_listener wl_listener_registry =
+{
     .global = wl_registry_global,
-    .global_remove = wl_registry_remove
+    .global_remove = wl_registry_global_remove 
 };
 
 static struct xdg_wm_base_listener xdg_listener_wm_base =
@@ -126,7 +205,32 @@ static struct xdg_toplevel_listener xdg_listener_toplevel =
     .close = xdg_toplevel_close,
     .configure = xdg_toplevel_configure,
     .configure_bounds = xdg_toplevel_configure_bounds,
-    .wm_capabilities = xdg_toplevel_wm_capabilities
+    .wm_capabilities = xdg_toplevel_wm_capabilities 
+};
+
+static struct wl_keyboard_listener wl_listener_keyboard =
+{
+    .keymap = wl_keyboard_keymap,
+    .key = wl_keyboard_key,
+    .repeat_info = wl_keyboard_repeat_info, 
+    .enter = wl_keyboard_enter,
+    .leave = wl_keyboard_leave, 
+    .modifiers = wl_keyboard_modifiers
+};
+
+static struct wl_pointer_listener wl_listener_pointer =
+{
+    .motion = wl_pointer_motion,
+    .button = wl_pointer_button,
+    .axis = wl_pointer_axis,
+    .axis_discrete = wl_pointer_axis_discrete,
+    .axis_relative_direction = wl_pointer_axis_relative_direction,
+    .axis_source = wl_pointer_axis_source,
+    .axis_stop = wl_pointer_axis_stop,
+    .axis_value120 = wl_pointer_axis_value120,
+    .enter = wl_pointer_enter,
+    .leave = wl_pointer_leave,
+    .frame = wl_pointer_frame 
 };
 
 //
@@ -327,23 +431,23 @@ static void destroy_egl_surface(lx_window* window)
 //  public
 //
 
-lx_window* lx_window_create(const char* title, int width, int height)
+void lx_window_create(const char* title, int width, int height)
 {
-    PARAM_GUARD(title == NULL, ("could not create window with null title"), NULL);
-    PARAM_GUARD(width < 1 || width > 7680 || height < 1 || height > 4320, ("could not create window with improper dimensions, expected 1x1 to 7680x4320 but got %dx%d", width, height), NULL);
+    PARAM_GUARD(window != NULL, ("could not create another window as one already exists"));
+    PARAM_GUARD(title == NULL, ("could not create window with null title"));
+    PARAM_GUARD(width < 1 || width > 7680 || height < 1 || height > 4320, ("could not create window with improper dimensions, expected 1x1 to 7680x4320 but got %dx%d", width, height));
 
-    static lx_window* window = NULL;
     if (window != NULL)
     {
         lx_set_last_error("failed to create window because it already exists");
-        return NULL;
+        return;
     }
 
     window = malloc(sizeof(lx_window));
     if (!window)
     {
         lx_set_last_error("failed to allocate window struct");
-        return NULL;
+        return;
     }
     lx_debug("allocated window struct");
 
@@ -356,44 +460,42 @@ lx_window* lx_window_create(const char* title, int width, int height)
     if (success != NULL)
     {
         lx_set_last_error("%s", success);
-        lx_window_destroy(window);
-        return NULL;
+        lx_window_destroy();
+        return;
     }
 
     success = create_xdg_shell(window);
     if (success != NULL)
     {
         lx_set_last_error("%s", success);
-        lx_window_destroy(window);
-        return NULL;
+        lx_window_destroy();
+        return;
     }
 
     success = create_egl_surface(window);
     if (success != NULL)
     {
         lx_set_last_error("%s", success);
-        lx_window_destroy(window);
-        return NULL;
+        lx_window_destroy();
+        return;
     }
 
     int version = load_gl_procs();
     version = load_gl_procs();
     if (version == 0)
     {
-        lx_window_destroy(window);
-        return NULL;
+        lx_window_destroy();
+        return;
     }
     lx_debug("loaded opengl version %d.%d", (version / 10000), (version % 10000));
 
     glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    return window;
 }
 
-void lx_window_destroy(lx_window* window)
+void lx_window_destroy()
 {
-    PARAM_GUARD(window == NULL, ("could not destroy null window"));
+    PARAM_GUARD(window == NULL, ("could not destroy non-existent window"));
 
     destroy_egl_surface(window);
     destroy_xdg_shell(window);
@@ -403,22 +505,22 @@ void lx_window_destroy(lx_window* window)
     lx_debug("freed window struct");
 }
 
-void lx_window_update(lx_window* window)
+void lx_window_update()
 {
-    PARAM_GUARD(window == NULL, ("could not update null window"));
+    PARAM_GUARD(window == NULL, ("could not update non-existent window"));
     
     wl_display_dispatch(window->wl_display);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void lx_window_render(lx_window* window)
+void lx_window_render()
 {
-    PARAM_GUARD(window == NULL, ("could not render null window"));
+    PARAM_GUARD(window == NULL, ("could not render non-existent window"));
     eglSwapBuffers(window->egl_display, window->egl_surface);
 }
 
-int lx_window_is_alive(lx_window* window)
+int lx_window_is_alive()
 {
-    PARAM_GUARD(window == NULL, ("could not determine alive state of null window"), 0);
+    PARAM_GUARD(window == NULL, ("could not determine alive state of non-existent window"), 0);
     return window->is_alive;
 }

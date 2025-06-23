@@ -8,7 +8,7 @@
 //  private
 //
 
-unsigned int create_shader_from_file(unsigned int type, const char* file)
+static unsigned int create_shader_from_file(unsigned int type, const char* file)
 {
     const char* source = lx_read_file(file);
     if (source == NULL)

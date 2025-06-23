@@ -10,6 +10,7 @@
 //
 
 static int debug_messages_enabled = 0;
+static int error_messages_enabled = 0;
 static char last_error[512] = { 0 };
 
 #define UNWRAP_THEN_STDPRINT(prefix)	\
@@ -36,6 +37,12 @@ void lx_enable_debug_messages(int enabled)
 	debug_messages_enabled = enabled;
 }
 
+void lx_print_error_on_occurance(int enabled)
+{
+    PARAM_GUARD(enabled > 1 || enabled < 0, ("could not toggle error on occurance, expected 1 (enabled) or 0 (disabled) but got %d", enabled));
+    error_messages_enabled = enabled;
+}
+
 void lx_set_last_error(const char* fmt, ...)
 {
     PARAM_GUARD(fmt == NULL, ("could not set last error to null"));
@@ -46,6 +53,9 @@ void lx_set_last_error(const char* fmt, ...)
     vsnprintf(last_error, sizeof(last_error), fmt, args);
 
     va_end(args);
+
+    if (error_messages_enabled)
+        lx_print_last_error();
 }
 
 void lx_get_last_error(char* buffer, size_t buffer_size)
