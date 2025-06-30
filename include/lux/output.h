@@ -7,6 +7,8 @@ LX_BEGIN_HEADER
 //  window
 //
 
+typedef struct _lx_window lx_window;
+
 /**
  * @brief Creates a window with the specified properties.
  * 
@@ -16,14 +18,50 @@ LX_BEGIN_HEADER
  * @param title The title of the window.
  * @param width The width of the window.
  * @param height The height of the window.
+ *
+ * @return A pointer to the window.
  */
-void lx_window_create(const char* title, int width, int height);
+lx_window* lx_window_create(const char* title, int width, int height);
 
 /**
  * @brief Properly closes the window and frees any memory associated with it. The
  * window cannot be used after calling this.
+ *
+ * @param window The window pointer.
  */
-void lx_window_destroy();
+void lx_window_destroy(lx_window* window);
+
+/**
+ * @brief Sets the current context that OpenGL functions will target. For
+ * example, if window 1 is current, then all OpenGL function calls will go to
+ * that window, however if you then made window 1 current, all OpenGl functions
+ * will go to that window instead.
+ *
+ * This is only used when handling multiple windows, `lx_window_create`
+ * automatically does this for you.
+ *
+ * @param window The window pointer.
+ */
+void lx_window_make_current(lx_window* window);
+
+/**
+ * @brief Returns the time since the last frame and the current.
+ *
+ * @param window The window pointer.
+ *
+ * @return Delta time in milliseconds.
+ */
+double lx_window_get_delta_time(lx_window* window);
+
+/**
+ * @brief Returns the amount of frames rendered in a second. Note that this is
+ * predicted, not actually measured, so assume some inaccuracy.
+ *
+ * @param window The window pointer.
+ *
+ * @return A predicted amount of frames rendered in the last second.
+ */
+int lx_window_get_fps(lx_window* window);
 
 /**
  * @brief Polls the window events and processes any input received. then proceeds
@@ -31,8 +69,10 @@ void lx_window_destroy();
  *
  * Though not required, it is recommended to call this function **before** a
  * call to `lx_window_render`.
+ *
+ * @param window The window pointer.
  */
-void lx_window_update();
+void lx_window_update(lx_window* window);
 
 /**
  * @brief Swaps the front and back buffers of the window, presenting whatever was
@@ -40,8 +80,10 @@ void lx_window_update();
  *
  * Though not required, it is recommended to call this function **after** a
  * call to `lx_window_update`.
+ *
+ * @param window The window pointer.
  */
-void lx_window_render();
+void lx_window_render(lx_window* window);
 
 /**
  * @brief Used to detect if a quit signal has been given to the window either through
@@ -49,8 +91,10 @@ void lx_window_render();
  *
  * @return The status of the window. 1 means the window is alive and okay, 0
  * means that a quit signal has been received and the window should terminate.
+ *
+ * @param window The window pointer.
  */
-int lx_window_is_alive();
+int lx_window_is_alive(lx_window* window);
 
 //
 //  shader
