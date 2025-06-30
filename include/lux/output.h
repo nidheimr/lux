@@ -34,11 +34,20 @@ void lx_window_destroy(lx_window* window);
 /**
  * @brief Sets the current context that OpenGL functions will target. For
  * example, if window 1 is current, then all OpenGL function calls will go to
- * that window, however if you then made window 1 current, all OpenGl functions
+ * that window, however if you then made window 2 current, all OpenGL functions
  * will go to that window instead.
  *
  * This is only used when handling multiple windows, `lx_window_create`
  * automatically does this for you.
+ *
+ * Lux tries to make the correct window current when calling `lx_window`
+ * functions, but this is not guaranteed; it would be better to manually
+ * swap the current context to the desired window yourself before doing
+ * anything.
+ *
+ * Additionally, multiple windows in a single program isn't very well supported
+ * so try to avoid doing so. It should work following the advice given but do
+ * not expect perfection.
  *
  * @param window The window pointer.
  */

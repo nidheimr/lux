@@ -65,6 +65,7 @@ lx_window;
 // necessary forward declare
 static struct wl_keyboard_listener wl_listener_keyboard;
 static struct wl_pointer_listener wl_listener_pointer;
+static int make_context_current_if_needed(lx_window* window);
 
 static void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
 {
@@ -113,6 +114,13 @@ static void xdg_toplevel_configure(void* data, struct xdg_toplevel* toplevel, in
         return;
 
     lx_window* window = data;
+    
+    if (make_context_current_if_needed(window))
+    {
+        lx_set_last_error("failed to make window %s current during resize", window->title);
+        return;
+    }
+
     window->width = width;
     window->height = height;
 
@@ -323,6 +331,7 @@ static const char* create_xdg_shell(lx_window* window)
     xdg_toplevel_set_title(window->xdg_toplevel, window->title);
     xdg_toplevel_set_app_id(window->xdg_toplevel, window->title);
     xdg_toplevel_add_listener(window->xdg_toplevel, &xdg_listener_toplevel, window);
+
     lx_debug("-> created xdg toplevel");
 
     return NULL;
@@ -434,6 +443,17 @@ static double get_time()
     return time.tv_sec + (time.tv_usec / 1000000.0);
 }
 
+static int make_context_current_if_needed(lx_window* window)
+{
+    if (eglGetCurrentContext() == window->egl_context && eglGetCurrentSurface(EGL_DRAW) == window->egl_surface && eglGetCurrentSurface(EGL_READ) == window->egl_surface)
+        return 0;
+
+    if (!eglMakeCurrent(window->egl_display, window->egl_surface, window->egl_surface, window->egl_context))
+        return 1;
+
+    return 0;
+}
+
 //
 //  public
 //
@@ -488,8 +508,12 @@ lx_window* lx_window_create(const char* title, int width, int height)
         return NULL;
     }
 
-    if (!eglMakeCurrent(window->egl_display, window->egl_surface, window->egl_surface, window->egl_context))
+    if (make_context_current_if_needed(window))
+    {
         lx_set_last_error("failed to make egl context current");
+        lx_window_destroy(window);
+        return NULL;
+    }
 
     lx_debug("-> made window current");
 
@@ -530,8 +554,11 @@ void lx_window_make_current(lx_window* window)
 {
     PARAM_GUARD(window == NULL, ("could not make null window current"));
 
-    if (!eglMakeCurrent(window->egl_display, window->egl_surface, window->egl_surface, window->egl_context))
+    if (make_context_current_if_needed(window))
+    {
         lx_set_last_error("failed to make egl context current");
+        return;
+    }
 
     lx_debug("made window %s current", window->title); 
 }
@@ -558,12 +585,26 @@ void lx_window_update(lx_window* window)
     window->delta_time = window->cur_frame_time - window->last_frame_time;
 
     wl_display_dispatch(window->wl_display);
+
+    if (make_context_current_if_needed(window))
+    {
+        lx_set_last_error("failed to make window %s current during update", window->title);
+        return;
+    }
+
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void lx_window_render(lx_window* window)
 {
     PARAM_GUARD(window == NULL, ("could not render null window"));
+
+    if (make_context_current_if_needed(window))
+    {
+        lx_set_last_error("failed to make window %s current during update", window->title);
+        return;
+    }
+
     eglSwapBuffers(window->egl_display, window->egl_surface);
 }
 
