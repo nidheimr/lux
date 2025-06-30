@@ -58,6 +58,8 @@ typedef struct _lx_window
 }
 lx_window;
 
+static lx_window* internal_ref = NULL;
+
 //
 //  private - callbacks
 //
@@ -65,7 +67,6 @@ lx_window;
 // necessary forward declare
 static struct wl_keyboard_listener wl_listener_keyboard;
 static struct wl_pointer_listener wl_listener_pointer;
-static int make_context_current_if_needed(lx_window* window);
 
 static void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
 {
@@ -114,13 +115,6 @@ static void xdg_toplevel_configure(void* data, struct xdg_toplevel* toplevel, in
         return;
 
     lx_window* window = data;
-    
-    if (make_context_current_if_needed(window))
-    {
-        lx_set_last_error("failed to make window %s current during resize", window->title);
-        return;
-    }
-
     window->width = width;
     window->height = height;
 
@@ -443,26 +437,16 @@ static double get_time()
     return time.tv_sec + (time.tv_usec / 1000000.0);
 }
 
-static int make_context_current_if_needed(lx_window* window)
-{
-    if (eglGetCurrentContext() == window->egl_context && eglGetCurrentSurface(EGL_DRAW) == window->egl_surface && eglGetCurrentSurface(EGL_READ) == window->egl_surface)
-        return 0;
-
-    if (!eglMakeCurrent(window->egl_display, window->egl_surface, window->egl_surface, window->egl_context))
-        return 1;
-
-    return 0;
-}
-
 //
 //  public
 //
 
 lx_window* lx_window_create(const char* title, int width, int height)
 {
+    PARAM_GUARD(internal_ref != NULL, ("could not create another window when one already exists as multiple windows are not supported"), NULL);
     PARAM_GUARD(title == NULL, ("could not create window with null title"), NULL);
     PARAM_GUARD(width < 1 || width > 7680 || height < 1 || height > 4320, ("could not create window with improper dimensions, expected 1x1 to 7680x4320 but got %dx%d", width, height), NULL);
-    
+
     lx_debug("creating window %s @ %dx%d", title, width, height);
 
     lx_window* window = malloc(sizeof(lx_window));
@@ -508,13 +492,7 @@ lx_window* lx_window_create(const char* title, int width, int height)
         return NULL;
     }
 
-    if (make_context_current_if_needed(window))
-    {
-        lx_set_last_error("failed to make egl context current");
-        lx_window_destroy(window);
-        return NULL;
-    }
-
+    eglMakeCurrent(window->egl_display, window->egl_surface, window->egl_surface, window->egl_context); 
     lx_debug("-> made window current");
 
     int version = load_gl_procs();
@@ -531,6 +509,7 @@ lx_window* lx_window_create(const char* title, int width, int height)
 
     lx_debug("finished creating window");
 
+    internal_ref = window;
     return window;
 }
 
@@ -546,21 +525,9 @@ void lx_window_destroy(lx_window* window)
 
     free(window);
     lx_debug("-> freed window struct");
-
+    
+    internal_ref = NULL;
     lx_debug("finished destroying window");
-}
-
-void lx_window_make_current(lx_window* window)
-{
-    PARAM_GUARD(window == NULL, ("could not make null window current"));
-
-    if (make_context_current_if_needed(window))
-    {
-        lx_set_last_error("failed to make egl context current");
-        return;
-    }
-
-    lx_debug("made window %s current", window->title); 
 }
 
 double lx_window_get_delta_time(lx_window* window)
@@ -586,24 +553,12 @@ void lx_window_update(lx_window* window)
 
     wl_display_dispatch(window->wl_display);
 
-    if (make_context_current_if_needed(window))
-    {
-        lx_set_last_error("failed to make window %s current during update", window->title);
-        return;
-    }
-
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void lx_window_render(lx_window* window)
 {
     PARAM_GUARD(window == NULL, ("could not render null window"));
-
-    if (make_context_current_if_needed(window))
-    {
-        lx_set_last_error("failed to make window %s current during update", window->title);
-        return;
-    }
 
     eglSwapBuffers(window->egl_display, window->egl_surface);
 }

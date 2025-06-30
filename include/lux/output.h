@@ -32,28 +32,6 @@ lx_window* lx_window_create(const char* title, int width, int height);
 void lx_window_destroy(lx_window* window);
 
 /**
- * @brief Sets the current context that OpenGL functions will target. For
- * example, if window 1 is current, then all OpenGL function calls will go to
- * that window, however if you then made window 2 current, all OpenGL functions
- * will go to that window instead.
- *
- * This is only used when handling multiple windows, `lx_window_create`
- * automatically does this for you.
- *
- * Lux tries to make the correct window current when calling `lx_window`
- * functions, but this is not guaranteed; it would be better to manually
- * swap the current context to the desired window yourself before doing
- * anything.
- *
- * Additionally, multiple windows in a single program isn't very well supported
- * so try to avoid doing so. It should work following the advice given but do
- * not expect perfection.
- *
- * @param window The window pointer.
- */
-void lx_window_make_current(lx_window* window);
-
-/**
  * @brief Returns the time since the last frame and the current.
  *
  * @param window The window pointer.
@@ -98,10 +76,10 @@ void lx_window_render(lx_window* window);
  * @brief Used to detect if a quit signal has been given to the window either through
  * the user trying to close the window or through signals.
  *
+ * @param window The window pointer.
+ *
  * @return The status of the window. 1 means the window is alive and okay, 0
  * means that a quit signal has been received and the window should terminate.
- *
- * @param window The window pointer.
  */
 int lx_window_is_alive(lx_window* window);
 
@@ -121,8 +99,8 @@ typedef unsigned int lx_shader;
  * @param vertex_file The file containing the vertex source code.
  * @param fragment_file The file containing the fragment source code.
  *
- * @return The ID of the shader, compatible with OpenGL functions, or 0 on
- * failure.
+ * @return The shader program created with the given vertex and fragment
+ * sources.
  */
 lx_shader lx_shader_create(const char* vertex_file, const char* fragment_file);
 
@@ -130,7 +108,7 @@ lx_shader lx_shader_create(const char* vertex_file, const char* fragment_file);
  * @brief Properly destroys the shader and frees any memory associated with it.
  * The shader cannot be used after calling this.
  *
- * @param shader The shader ID.
+ * @param shader The shader.
  */
 void lx_shader_destroy(lx_shader shader);
 
@@ -138,7 +116,7 @@ void lx_shader_destroy(lx_shader shader);
  * @brief Sets the given shader as the active one, all future rendering
  * functions will use this shader until specified otherwise.
  *
- * @param shader The shader ID.
+ * @param shader The shader.
  */
 void lx_shader_use(lx_shader shader);
 
@@ -147,7 +125,7 @@ void lx_shader_use(lx_shader shader);
  * rendering, it is mainly a utility to test shaders or test that a window
  * was setup correctly.
  *
- * @param shader The shader ID.
+ * @param shader The shader.
  */
 void lx_shader_test(lx_shader shader);
 
