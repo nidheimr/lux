@@ -2,29 +2,36 @@
 
 #include <math.h>
 
+//
+//  private
+//
+
+static const float PI = 3.14159265358979323846;
+
+//
+//  public
+//
+
 float lx_clampf(float f, float min, float max)
 {
     if (f < min) return min;
     if (f > max) return max;
-
     return f;
 }
 
 float lx_lerpf(float a, float b, float t)
 {
-    return a + t * (b - a);
+    return a + (b - a) * t;
 }
 
 float lx_deg_to_rad(float degrees)
 {
-    const float conversion_factor = 0.01745329251994329576923690768489f;
-    return degrees * conversion_factor;
+    return degrees * (PI / 180); 
 }
 
 float lx_rad_to_deg(float radians)
 {
-    const float conversion_factor = 57.295779513082320876798154814105f;
-    return radians * conversion_factor;
+    return radians * (180 / PI);
 }
 
 int lx_float_equal(float a, float b, float epsilon)

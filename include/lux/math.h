@@ -10,9 +10,9 @@ LX_BEGIN_HEADER
 typedef struct _lx_vec2 { float x, y; } lx_vec2;
 typedef struct _lx_vec3 { float x, y, z; } lx_vec3;
 typedef struct _lx_vec4 { float x, y, z, w; } lx_vec4;
-typedef struct _lx_mat2 { float m[2][2]; } lx_mat2;
-typedef struct _lx_mat3 { float m[3][3]; } lx_mat3;
-typedef struct _lx_mat4 { float m[4][4]; } lx_mat4;
+typedef struct _lx_mat2 { float m[4]; } lx_mat2;
+typedef struct _lx_mat3 { float m[9]; } lx_mat3;
+typedef struct _lx_mat4 { float m[16]; } lx_mat4;
 typedef struct _lx_quat { float x, y, z, w; } lx_quat;
 
 //
