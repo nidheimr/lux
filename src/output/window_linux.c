@@ -49,9 +49,11 @@ typedef struct _lx_window
     char title[32];
     int width;
     int height;
-    
+    lx_window_resize_callback on_resize;
+
     // dynamic properties
     int is_alive;
+    double time_began;
     double last_frame_time;
     double cur_frame_time;
     double delta_time;
@@ -119,7 +121,11 @@ static void xdg_toplevel_configure(void* data, struct xdg_toplevel* toplevel, in
     window->height = height;
 
     wl_egl_window_resize(window->egl_window, width, height, 0, 0);
-    glViewport(0, 0, width, height);
+
+    if (window->on_resize == NULL)
+        glViewport(0, 0, width, height);
+    else
+        window->on_resize(window, width, height);
 }
 
 static void xdg_toplevel_configure_bounds(void* data, struct xdg_toplevel* toplevel, int32_t width, int32_t height)
@@ -250,14 +256,14 @@ static const char* create_wayland_window(lx_window* window)
     if (!window->wl_display)
         return "failed to connect to wayland display";
 
-    lx_debug("-> created wl display");
+    lx_produce_debug("-> created wl display");
 
     window->wl_registry = wl_display_get_registry(window->wl_display);
     if (!window->wl_registry)
         return "failed to get wayland display registry";
 
     wl_registry_add_listener(window->wl_registry, &wl_listener_registry, window);
-    lx_debug("-> created wl registry");
+    lx_produce_debug("-> created wl registry");
     
     if (wl_display_roundtrip(window->wl_display) < 0)
         return "failed to complete wayland round trip";
@@ -265,13 +271,13 @@ static const char* create_wayland_window(lx_window* window)
     if (!window->wl_compositor) // set by wl_display_roundtrip and the registry_global callback
         return "failed to get wayland compositor";
 
-    lx_debug("-> created wl compositor");
+    lx_produce_debug("-> created wl compositor");
 
     window->wl_surface = wl_compositor_create_surface(window->wl_compositor);
     if (!window->wl_surface)
         return "failed to create wayland surface";
 
-    lx_debug("-> created wl surface");
+    lx_produce_debug("-> created wl surface");
 
     return NULL;
 }
@@ -281,25 +287,25 @@ static void destroy_wayland_window(lx_window* window)
     if (window->wl_surface != NULL)
     {
         wl_surface_destroy(window->wl_surface);
-        lx_debug("-> destroyed wl surface");
+        lx_produce_debug("-> destroyed wl surface");
     }
 
     if (window->wl_compositor != NULL)
     {
         wl_compositor_destroy(window->wl_compositor);
-        lx_debug("-> destroyed wl compositor");
+        lx_produce_debug("-> destroyed wl compositor");
     }
 
     if (window->wl_registry != NULL)
     {
         wl_registry_destroy(window->wl_registry);
-        lx_debug("-> destroyed wl registry");
+        lx_produce_debug("-> destroyed wl registry");
     }
 
     if (window->wl_display != NULL)
     {
         wl_display_disconnect(window->wl_display);
-        lx_debug("-> destroyed wl display");
+        lx_produce_debug("-> destroyed wl display");
     }
 }
 
@@ -309,14 +315,14 @@ static const char* create_xdg_shell(lx_window* window)
         return "failed to get xdg wm base";
 
     xdg_wm_base_add_listener(window->xdg_wm_base, &xdg_listener_wm_base, NULL);
-    lx_debug("-> created xdg wm base");
+    lx_produce_debug("-> created xdg wm base");
 
     window->xdg_surface = xdg_wm_base_get_xdg_surface(window->xdg_wm_base, window->wl_surface);
     if (!window->xdg_surface)
         return "failed to create xdg surface";
 
     xdg_surface_add_listener(window->xdg_surface, &xdg_listener_surface, NULL);
-    lx_debug("-> created xdg surface");
+    lx_produce_debug("-> created xdg surface");
 
     window->xdg_toplevel = xdg_surface_get_toplevel(window->xdg_surface);
     if (!window->xdg_toplevel)
@@ -326,7 +332,7 @@ static const char* create_xdg_shell(lx_window* window)
     xdg_toplevel_set_app_id(window->xdg_toplevel, window->title);
     xdg_toplevel_add_listener(window->xdg_toplevel, &xdg_listener_toplevel, window);
 
-    lx_debug("-> created xdg toplevel");
+    lx_produce_debug("-> created xdg toplevel");
 
     return NULL;
 }
@@ -336,19 +342,19 @@ static void destroy_xdg_shell(lx_window* window)
     if (window->xdg_toplevel != NULL)
     {
         xdg_toplevel_destroy(window->xdg_toplevel);
-        lx_debug("-> destroyed xdg toplevel");
+        lx_produce_debug("-> destroyed xdg toplevel");
     }
 
     if (window->xdg_surface != NULL)
     {
         xdg_surface_destroy(window->xdg_surface);
-        lx_debug("-> destroyed xdg surface");
+        lx_produce_debug("-> destroyed xdg surface");
     }
 
     if (window->xdg_wm_base != NULL)
     {
         xdg_wm_base_destroy(window->xdg_wm_base);
-        lx_debug("-> destroyed xdg wm base");
+        lx_produce_debug("-> destroyed xdg wm base");
     }
 }
 
@@ -358,12 +364,12 @@ static const char* create_egl_surface(lx_window* window)
     if (window->egl_display == EGL_NO_DISPLAY)
         return "failed to create egl display";
 
-    lx_debug("-> created egl display");
+    lx_produce_debug("-> created egl display");
     
     if (eglInitialize(window->egl_display, NULL, NULL) != EGL_TRUE)
         return "failed to initialise egl";
 
-    lx_debug("-> initialised egl");
+    lx_produce_debug("-> initialised egl");
 
     EGLConfig config;
     EGLint num_configs;
@@ -371,6 +377,7 @@ static const char* create_egl_surface(lx_window* window)
     {
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+        EGL_DEPTH_SIZE, 24,
         EGL_NONE
     };
 
@@ -380,25 +387,25 @@ static const char* create_egl_surface(lx_window* window)
     EGLint context_attribs[] = { EGL_NONE };
     eglBindAPI(EGL_OPENGL_API);
     
-    lx_debug("-> configured egl");
+    lx_produce_debug("-> configured egl");
 
     window->egl_context = eglCreateContext(window->egl_display, config, EGL_NO_CONTEXT, context_attribs);
     if (!window->egl_context)
         return "failed to create egl context";
 
-    lx_debug("-> created egl context");
+    lx_produce_debug("-> created egl context");
 
     window->egl_window = wl_egl_window_create(window->wl_surface, window->width, window->height);
     if (!window->egl_window)
         return "failed to create egl window";
 
-    lx_debug("-> created egl window");
+    lx_produce_debug("-> created egl window");
 
     window->egl_surface = eglCreateWindowSurface(window->egl_display, config, (EGLNativeWindowType)window->egl_window, NULL);
     if (window->egl_surface == EGL_NO_SURFACE)
         return "failed to create egl surface";
 
-    lx_debug("-> created egl surface"); 
+    lx_produce_debug("-> created egl surface"); 
 
     return NULL;
 }
@@ -408,25 +415,25 @@ static void destroy_egl_surface(lx_window* window)
     if (window->egl_surface != NULL)
     {
         eglDestroySurface(window->egl_display, window->egl_surface);
-        lx_debug("-> destroyed egl surface");
+        lx_produce_debug("-> destroyed egl surface");
     }
 
     if (window->egl_window != NULL)
     {
         wl_egl_window_destroy(window->egl_window);
-        lx_debug("-> destroyed egl window");
+        lx_produce_debug("-> destroyed egl window");
     }
 
     if (window->egl_context != NULL)
     {
         eglDestroyContext(window->egl_display, window->egl_context);
-        lx_debug("-> destroyed egl context");
+        lx_produce_debug("-> destroyed egl context");
     }
 
     if (window->egl_display != NULL)
     {
         eglTerminate(window->egl_display);
-        lx_debug("-> destroyed egl display");
+        lx_produce_debug("-> destroyed egl display");
     }
 }
 
@@ -441,29 +448,31 @@ static double get_time()
 //  public
 //
 
-lx_window* lx_window_create(const char* title, int width, int height)
+lx_window* lx_window_create(lx_window_properties properties)
 {
     PARAM_GUARD(internal_ref != NULL, ("could not create another window when one already exists as multiple windows are not supported"), NULL);
-    PARAM_GUARD(title == NULL, ("could not create window with null title"), NULL);
-    PARAM_GUARD(width < 1 || width > 7680 || height < 1 || height > 4320, ("could not create window with improper dimensions, expected 1x1 to 7680x4320 but got %dx%d", width, height), NULL);
+    PARAM_GUARD(properties.title == NULL, ("could not create window with null title"), NULL);
+    PARAM_GUARD(properties.width < 1 || properties.width > 7680 || properties.height < 1 || properties.height > 4320, ("could not create window with improper dimensions, expected 1x1 to 7680x4320 but got %dx%d", properties.width, properties.height), NULL);
 
-    lx_debug("creating window %s @ %dx%d", title, width, height);
+    lx_produce_debug("creating window %s @ %dx%d", properties.title, properties.width, properties.height);
 
     lx_window* window = malloc(sizeof(lx_window));
     if (!window)
     {
-        lx_set_last_error("failed to allocate window struct");
+        lx_produce_error("failed to allocate window struct");
         return NULL;
     }
-    lx_debug("-> allocated window struct");
+    lx_produce_debug("-> allocated window struct");
 
-    snprintf(window->title, sizeof(window->title), "%s", title);
-    window->width = width;
-    window->height = height;
-    
+    snprintf(window->title, sizeof(window->title), "%s", properties.title);
+    window->width = properties.width;
+    window->height = properties.height;
+    window->on_resize = properties.on_resize;
+
     window->is_alive = 1;
 
     double now = get_time();
+    window->time_began = now;
     window->last_frame_time = now;
     window->cur_frame_time = now;
     window->delta_time = 0.0;
@@ -471,7 +480,7 @@ lx_window* lx_window_create(const char* title, int width, int height)
     const char* success = create_wayland_window(window);
     if (success != NULL)
     {
-        lx_set_last_error("%s", success);
+        lx_produce_error("%s", success);
         lx_window_destroy(window);
         return NULL;
     }
@@ -479,7 +488,7 @@ lx_window* lx_window_create(const char* title, int width, int height)
     success = create_xdg_shell(window);
     if (success != NULL)
     {
-        lx_set_last_error("%s", success);
+        lx_produce_error("%s", success);
         lx_window_destroy(window);
         return NULL;
     }
@@ -487,13 +496,13 @@ lx_window* lx_window_create(const char* title, int width, int height)
     success = create_egl_surface(window);
     if (success != NULL)
     {
-        lx_set_last_error("%s", success);
+        lx_produce_error("%s", success);
         lx_window_destroy(window);
         return NULL;
     }
 
     eglMakeCurrent(window->egl_display, window->egl_surface, window->egl_surface, window->egl_context); 
-    lx_debug("-> made window current");
+    lx_produce_debug("-> made window current");
 
     int version = load_gl_procs();
     version = load_gl_procs();
@@ -502,12 +511,9 @@ lx_window* lx_window_create(const char* title, int width, int height)
         lx_window_destroy(window);
         return NULL;
     }
-    lx_debug("-> loaded opengl version %d.%d", (version / 10000), (version % 10000));
+    lx_produce_debug("-> loaded opengl version %d.%d", (version / 10000), (version % 10000));
 
-    glViewport(0, 0, width, height);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    lx_debug("finished creating window");
+    lx_produce_debug("finished creating window");
 
     internal_ref = window;
     return window;
@@ -517,17 +523,32 @@ void lx_window_destroy(lx_window* window)
 {
     PARAM_GUARD(window == NULL, ("could not destroy null window"));
 
-    lx_debug("destroying window %s", window->title);
+    lx_produce_debug("destroying window %s", window->title);
 
     destroy_egl_surface(window);
     destroy_xdg_shell(window);
     destroy_wayland_window(window);
 
     free(window);
-    lx_debug("-> freed window struct");
+    lx_produce_debug("-> freed window struct");
     
     internal_ref = NULL;
-    lx_debug("finished destroying window");
+    lx_produce_debug("finished destroying window");
+}
+
+const char* lx_window_get_title(lx_window* window)
+{
+    return window->title;
+}
+
+int lx_window_get_width(lx_window* window)
+{
+    return window->width;
+}
+
+int lx_window_get_height(lx_window* window)
+{
+    return window->height;
 }
 
 double lx_window_get_delta_time(lx_window* window)
@@ -543,6 +564,11 @@ int lx_window_get_fps(lx_window* window)
     return (int)(1.0 / window->delta_time);
 }
 
+double lx_window_get_time_elapsed(lx_window* window)
+{
+    return get_time() - window->time_began;
+}
+
 void lx_window_update(lx_window* window)
 {
     PARAM_GUARD(window == NULL, ("could not update null window"));
@@ -552,14 +578,11 @@ void lx_window_update(lx_window* window)
     window->delta_time = window->cur_frame_time - window->last_frame_time;
 
     wl_display_dispatch(window->wl_display);
-
-    glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void lx_window_render(lx_window* window)
+void lx_window_swap_buffers(lx_window* window)
 {
     PARAM_GUARD(window == NULL, ("could not render null window"));
-
     eglSwapBuffers(window->egl_display, window->egl_surface);
 }
 

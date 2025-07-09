@@ -9,73 +9,40 @@ LX_BEGIN_HEADER
 //  debug
 //
 
-/**
- * @brief Sets whether the debug messages should be printed or not. Errors and regular
- * prints are not affected by this.
- *
- * @param enabled 1 for enabled, 0 for disabled.
- */
-void lx_enable_debug_messages(int enabled);
+typedef void (*lx_error_callback)(const char* error);
+typedef void (*lx_debug_callback)(const char* debug);
 
 /**
- * @brief Sets whether error messages should also be printed when they are set.
- * 
- * Regular behaviour would be using `lx_get_last_error` or `lx_print_last_error`
- * to get/print the last error that occured, but this is a convenience toggle
- * to automatically run `lx_print_last_error` whenever a new error occures.
+ * @brief Sets the given function to the be the callback function for all
+ * future produced error messages.
  *
- * @param enabled 1 for enabled, 0 for disabled.
+ * @param callback the callback function.
  */
-void lx_print_error_on_occurance(int enabled);
+void lx_set_error_callback(lx_error_callback callback);
 
 /**
- * @brief Sets the last error produced and stores it for retrieval by
- * `lx_get_last_error`.
+ * @brief Sets the given function to the be the callback function for all
+ * future produced debug messages.
  *
- * @param fmt The printf-style format string.
- * @param ... Any formatting arguements.
+ * @param callback the callback function.
  */
-void lx_set_last_error(const char* fmt, ...);
+void lx_set_debug_callback(lx_debug_callback callback);
 
 /**
- * @brief Gets the last error produced, stored by `lx_set_last_error`, and places it
- * into `buffer`.
- *
- * @param buffer The buffer which will hold the last error.
- * @param buffer_size The size of said buffer.
- */
-void lx_get_last_error(char* buffer, size_t buffer_size);
-
-/**
- * @brief Prints to the standard output with a debug prefix. These messages can be
- * toggled using `lx_enable_debug_messages`.
+ * @brief Sends an error message to the currently bound error callback.
  *
  * @param fmt The printf-style format string.
  * @param ... Any formatting arguements.
  */
-void lx_debug(const char *fmt, ...);
+void lx_produce_error(const char* fmt, ...);
 
 /**
- * @brief Prints to the standard output with a print prefix.
+ * @brief Sends a debug message to the currently bound debug callback.
  *
  * @param fmt The printf-style format string.
  * @param ... Any formatting arguements.
  */
-void lx_print(const char* fmt, ...);
-
-/**
- * @brief Prints to the standard output with an error prefix.
- *
- * @param fmt The printf-style format string.
- * @param ... Any formatting arguements.
- */
-void lx_error(const char *fmt, ...);
-
-/**
- * @brief Prints to the standard output the last error produced. Works identically to
- * using `lx_get_last_error` with `lx_error`.   
- */
-void lx_print_last_error();
+void lx_produce_debug(const char* fmt, ...);
 
 //
 //  file io

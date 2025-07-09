@@ -17,7 +17,7 @@ const char* lx_read_file(const char* file)
 
     if (f == NULL)
     {
-        lx_set_last_error("failed to open file: %s", file);
+        lx_produce_error("failed to open file: %s", file);
         return NULL;
     }
 
@@ -28,7 +28,7 @@ const char* lx_read_file(const char* file)
     char* buffer = malloc(sizeof(char) * (length + 1));
     if (buffer == NULL)
     {
-        lx_set_last_error("failed to allocate space to read file: %s", file);
+        lx_produce_error("failed to allocate space to read file: %s", file);
         fclose(NULL);
         return NULL;
     }
@@ -38,6 +38,6 @@ const char* lx_read_file(const char* file)
 
     fclose(f);
 
-    lx_debug("obtained file as string: %s", file);
+    lx_produce_debug("obtained file as string: %s", file);
     return buffer;
 }

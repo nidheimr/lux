@@ -25,7 +25,7 @@ static unsigned int create_shader_from_file(unsigned int type, const char* file)
     if (!success)
     {
         glGetShaderInfoLog(shader, 512, NULL, info);
-        lx_set_last_error("failed to create shader, opengl produced error: %s", info);
+        lx_produce_error("failed to create shader, opengl produced error: %s", info);
         return 0;
     }
 
@@ -36,25 +36,25 @@ static unsigned int create_shader_from_file(unsigned int type, const char* file)
 //  public
 //
 
-lx_shader lx_shader_create(const char* vertex_file, const char* fragment_file)
+unsigned int lx_shader_create(lx_shader_properties properties)
 {
     PARAM_GUARD(lx_glCreateProgram == NULL, ("tried to create a shader before opengl functions were loaded"), 0);
-    PARAM_GUARD(vertex_file == NULL, ("could not create shader with a null vertex file"), 0);
-    PARAM_GUARD(fragment_file == NULL, ("could not create shader with a null fragment file"), 0);
+    PARAM_GUARD(properties.vertex_file == NULL, ("could not create shader with a null vertex file"), 0);
+    PARAM_GUARD(properties.fragment_file == NULL, ("could not create shader with a null fragment file"), 0);
  
-    lx_debug("creating shader from %s and %s", vertex_file, fragment_file);
+    lx_produce_debug("creating shader from %s and %s", properties.vertex_file, properties.fragment_file);
 
-    unsigned int vert = create_shader_from_file(GL_VERTEX_SHADER, vertex_file);
+    unsigned int vert = create_shader_from_file(GL_VERTEX_SHADER, properties.vertex_file);
     if (vert == 0)
         return 0;
 
-    lx_debug("-> created vertex shader");
+    lx_produce_debug("-> created vertex shader");
 
-    unsigned int frag = create_shader_from_file(GL_FRAGMENT_SHADER, fragment_file);
+    unsigned int frag = create_shader_from_file(GL_FRAGMENT_SHADER, properties.fragment_file);
     if (frag == 0)
         return 0;
 
-    lx_debug("-> created fragment shader");
+    lx_produce_debug("-> created fragment shader");
     
     unsigned int program = glCreateProgram();
     glAttachShader(program, vert);
@@ -68,7 +68,7 @@ lx_shader lx_shader_create(const char* vertex_file, const char* fragment_file)
     if (!success)
     {
         glGetProgramInfoLog(program, 512, NULL, info);
-        lx_set_last_error("failed to create program, opengl produced error: %s", info);
+        lx_produce_error("failed to create program, opengl produced error: %s", info);
         
         glDeleteShader(vert);
         glDeleteShader(frag);
@@ -76,67 +76,23 @@ lx_shader lx_shader_create(const char* vertex_file, const char* fragment_file)
         return 0;
     }
 
-    lx_debug("-> created shader program");
+    lx_produce_debug("-> created shader program");
 
     glDeleteShader(vert);
     glDeleteShader(frag);
 
-    lx_debug("finished creating shader");
+    lx_produce_debug("finished creating shader");
     return program;
 }
 
-void lx_shader_destroy(lx_shader shader)
+void lx_shader_destroy(unsigned int shader)
 {
     PARAM_GUARD(lx_glDeleteProgram == NULL, ("tried to destroy a shader before opengl functions were loaded"));
     PARAM_GUARD(glIsProgram(shader) == 0, ("tried to destroy a shader with an invalid id"));
 
-    lx_debug("destroying shader with id %d", shader);
+    lx_produce_debug("destroying shader with id %d", shader);
 
     glDeleteProgram(shader);
 
-    lx_debug("finished destroying shader");
-}
-
-void lx_shader_use(lx_shader shader)
-{
-    PARAM_GUARD(lx_glUseProgram == NULL, ("tried to use a shader before opengl functions were loaded"));
-    PARAM_GUARD(glIsProgram(shader) == 0, ("tried to use a shader with an invalid id"));
-
-    glUseProgram(shader);
-}
-
-void lx_shader_test(lx_shader shader)
-{
-    PARAM_GUARD(lx_glGenVertexArrays == NULL, ("tried to test a shader before opengl functions were loaded"));
-    PARAM_GUARD(glIsProgram(shader) == 0, ("tried to test a shader with an invalid id"));
-
-    static unsigned int vao;
-    static float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
-    };
-
-    if (vao == 0)
-    {
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
-        
-        unsigned int vbo;
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        glBindVertexArray(0);
-
-        lx_debug("created triangle vao for shader testing");
-    }
-
-    glUseProgram(shader);
-    glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindVertexArray(0);
+    lx_produce_debug("finished destroying shader");
 }

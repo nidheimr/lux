@@ -1,9 +1,9 @@
 #pragma once
 
-#define PARAM_GUARD(condition, error, ...)    \
-    if (condition)                      \
-    {                                   \
-        lx_set_last_error error;        \
-        return __VA_ARGS__;             \
+#define PARAM_GUARD(condition, error, ...)      \
+    if (condition)                              \
+    {                                           \
+        lx_produce_error error;                 \
+        return __VA_ARGS__;                     \
     }
         

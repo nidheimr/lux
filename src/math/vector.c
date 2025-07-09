@@ -66,16 +66,16 @@ lx_vec2 lx_vec2_normalize(lx_vec2 v)
 lx_vec2 lx_vec2_lerp(lx_vec2 a, lx_vec2 b, float t)
 {
     return (lx_vec2){
-        lx_lerpf(a.x, b.x, t),
-        lx_lerpf(a.y, b.y, t)
+        lx_float_lerp(a.x, b.x, t),
+        lx_float_lerp(a.y, b.y, t)
     };
 }
 
 lx_vec2 lx_vec2_clamp(lx_vec2 v, lx_vec2 min, lx_vec2 max)
 {
     return (lx_vec2){
-        lx_clampf(v.x, min.x, max.x),
-        lx_clampf(v.y, min.y, max.y)
+        lx_float_clamp(v.x, min.x, max.x),
+        lx_float_clamp(v.y, min.y, max.y)
     };
 }
 
@@ -165,18 +165,18 @@ lx_vec3 lx_vec3_normalize(lx_vec3 v)
 lx_vec3 lx_vec3_lerp(lx_vec3 a, lx_vec3 b, float t)
 {
     return (lx_vec3){
-        lx_lerpf(a.x, b.x, t),
-        lx_lerpf(a.y, b.y, t),
-        lx_lerpf(a.z, b.z, t)
+        lx_float_lerp(a.x, b.x, t),
+        lx_float_lerp(a.y, b.y, t),
+        lx_float_lerp(a.z, b.z, t)
     };
 }
 
 lx_vec3 lx_vec3_clamp(lx_vec3 v, lx_vec3 min, lx_vec3 max)
 {
     return (lx_vec3){
-        lx_clampf(v.x, min.x, max.x),
-        lx_clampf(v.y, min.y, max.y),
-        lx_clampf(v.z, min.z, max.z)
+        lx_float_clamp(v.x, min.x, max.x),
+        lx_float_clamp(v.y, min.y, max.y),
+        lx_float_clamp(v.z, min.z, max.z)
     };
 }
 
@@ -294,20 +294,20 @@ lx_vec4 lx_vec4_normalize(lx_vec4 v)
 lx_vec4 lx_vec4_lerp(lx_vec4 a, lx_vec4 b, float t)
 {
     return (lx_vec4){
-        lx_lerpf(a.x, b.x, t),
-        lx_lerpf(a.y, b.y, t),
-        lx_lerpf(a.z, b.z, t),
-        lx_lerpf(a.w, b.w, t)
+        lx_float_lerp(a.x, b.x, t),
+        lx_float_lerp(a.y, b.y, t),
+        lx_float_lerp(a.z, b.z, t),
+        lx_float_lerp(a.w, b.w, t)
     };
 }
 
 lx_vec4 lx_vec4_clamp(lx_vec4 v, lx_vec4 min, lx_vec4 max)
 {
     return (lx_vec4){
-        lx_clampf(v.x, min.x, max.x),
-        lx_clampf(v.y, min.y, max.y),
-        lx_clampf(v.z, min.z, max.z),
-        lx_clampf(v.w, min.w, max.w)
+        lx_float_clamp(v.x, min.x, max.x),
+        lx_float_clamp(v.y, min.y, max.y),
+        lx_float_clamp(v.z, min.z, max.z),
+        lx_float_clamp(v.w, min.w, max.w)
     };
 }
 

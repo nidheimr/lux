@@ -9,85 +9,63 @@
 //	private
 //
 
-static int debug_messages_enabled = 0;
-static int error_messages_enabled = 0;
-static char last_error[512] = { 0 };
-
-#define UNWRAP_THEN_STDPRINT(prefix)	\
-	va_list args;						\
-	va_start(args, fmt);				\
-	stdprint(prefix, fmt, args);		\
-	va_end(args)
-
-
-static void stdprint(const char *prefix, const char *fmt, va_list args)
+static void standard_error_callback(const char* error)
 {
-	printf("%s", prefix);
-	vprintf(fmt, args);
-	printf("\n");
+    printf("%s %s\n", "\033[31mERROR \033[38;2;80;80;80m>> \033[0m", error);
 }
+
+static void standard_debug_callback(const char* debug)
+{
+    printf("%s %s\n", "\033[34mDEBUG \033[38;2;80;80;80m>> \033[0m", debug);
+}
+
+static lx_error_callback errcb = standard_error_callback;
+static lx_debug_callback dbgcb = standard_debug_callback;
 
 //
 //	public
 //
 
-void lx_enable_debug_messages(int enabled)
+void lx_set_error_callback(lx_error_callback callback)
 {
-    PARAM_GUARD(enabled > 1 || enabled < 0, ("could not toggle debug messages, expected 1 (enabled) or 0 (disabled) but got %d", enabled));
-	debug_messages_enabled = enabled;
+    errcb = callback; 
 }
 
-void lx_print_error_on_occurance(int enabled)
+void lx_set_debug_callback(lx_debug_callback callback)
 {
-    PARAM_GUARD(enabled > 1 || enabled < 0, ("could not toggle error on occurance, expected 1 (enabled) or 0 (disabled) but got %d", enabled));
-    error_messages_enabled = enabled;
+    dbgcb = callback; 
 }
 
-void lx_set_last_error(const char* fmt, ...)
+void lx_produce_error(const char* fmt, ...)
 {
-    PARAM_GUARD(fmt == NULL, ("could not set last error to null"));
+    PARAM_GUARD(fmt == NULL, ("could not produce null error"));
+
+    if (errcb == NULL)
+        return;
 
     va_list args;
     va_start(args, fmt);
 
-    vsnprintf(last_error, sizeof(last_error), fmt, args);
+    char err[512];
+    vsnprintf(err, 512, fmt, args);
 
     va_end(args);
-
-    if (error_messages_enabled)
-        lx_print_last_error();
+    errcb(err);
 }
 
-void lx_get_last_error(char* buffer, size_t buffer_size)
+void lx_produce_debug(const char* fmt, ...)
 {
-    PARAM_GUARD(buffer == NULL, ("could not place last error into null buffer"));
-    PARAM_GUARD(buffer_size < 1 || buffer_size > 512, ("could not place last error into improperly sized buffer, expected size of 1-512 but got %d", buffer_size));
+    PARAM_GUARD(fmt == NULL, ("could not produce null debug"));
 
-    snprintf(buffer, buffer_size, "%s", last_error);
-}
+    if (dbgcb == NULL)
+        return;
 
-void lx_debug(const char *fmt, ...)
-{
-	if (!debug_messages_enabled)
-		return;
+    va_list args;
+    va_start(args, fmt);
 
-    PARAM_GUARD(fmt == NULL, ("could not debug null message"));
-	UNWRAP_THEN_STDPRINT("\033[34mDEBUG \033[38;2;80;80;80m>> \033[0m");
-}
+    char dbg[512];
+    vsnprintf(dbg, 512, fmt, args);
 
-void lx_print(const char* fmt, ...)
-{
-    PARAM_GUARD(fmt == NULL, ("could not print null message"));
-	UNWRAP_THEN_STDPRINT("\033[32mPRINT \033[38;2;80;80;80m>> \033[0m");
-}
-
-void lx_error(const char *fmt, ...)
-{
-    PARAM_GUARD(fmt == NULL, ("could not error null message"));
-	UNWRAP_THEN_STDPRINT("\033[31mERROR \033[38;2;80;80;80m>> \033[0m");
-}
-
-void lx_print_last_error()
-{
-    lx_error("%s", last_error);
+    va_end(args);
+    dbgcb(dbg);
 }

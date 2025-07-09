@@ -9,6 +9,18 @@ LX_BEGIN_HEADER
 
 typedef struct _lx_window lx_window;
 
+typedef void (*lx_window_resize_callback)(lx_window* window, int width, int height);
+
+typedef struct _lx_window_properties
+{
+    const char* title;
+    int width;
+    int height;
+
+    lx_window_resize_callback on_resize;
+}
+lx_window_properties;
+
 /**
  * @brief Creates a window with the specified properties.
  * 
@@ -21,7 +33,7 @@ typedef struct _lx_window lx_window;
  *
  * @return A pointer to the window.
  */
-lx_window* lx_window_create(const char* title, int width, int height);
+lx_window* lx_window_create(lx_window_properties properties);
 
 /**
  * @brief Properly closes the window and frees any memory associated with it. The
@@ -30,6 +42,33 @@ lx_window* lx_window_create(const char* title, int width, int height);
  * @param window The window pointer.
  */
 void lx_window_destroy(lx_window* window);
+
+/**
+ * @brief Returns the current title associated with the window.
+ *
+ * @param window The window pointer.
+ *
+ * @return The window title.
+ */
+const char* lx_window_get_title(lx_window* window);
+
+/**
+ * @brief Returns the current width associated with the window.
+ *
+ * @param window The window pointer.
+ *
+ * @return The window width.
+ */
+int lx_window_get_width(lx_window* window);
+
+/**
+ * @brief Returns the current height associated with the window.
+ *
+ * @param window The window pointer.
+ *
+ * @return The window height.
+ */
+int lx_window_get_height(lx_window* window);
 
 /**
  * @brief Returns the time since the last frame and the current.
@@ -51,11 +90,20 @@ double lx_window_get_delta_time(lx_window* window);
 int lx_window_get_fps(lx_window* window);
 
 /**
+ * @brief Return the precise amount of time since the windows creation. 
+ *
+ * @param window The window pointer.
+ *
+ * @return Time elapsed in seconds.
+ */
+double lx_window_get_time_elapsed(lx_window* window);
+
+/**
  * @brief Polls the window events and processes any input received. then proceeds
  * to clear the back buffer ready for drawing.
  *
  * Though not required, it is recommended to call this function **before** a
- * call to `lx_window_render`.
+ * call to `lx_window_swap_buffers`.
  *
  * @param window The window pointer.
  */
@@ -70,7 +118,7 @@ void lx_window_update(lx_window* window);
  *
  * @param window The window pointer.
  */
-void lx_window_render(lx_window* window);
+void lx_window_swap_buffers(lx_window* window);
 
 /**
  * @brief Used to detect if a quit signal has been given to the window either through
@@ -87,7 +135,12 @@ int lx_window_is_alive(lx_window* window);
 //  shader
 //
 
-typedef unsigned int lx_shader;
+typedef struct _lx_shader_properties
+{
+    const char* vertex_file;
+    const char* fragment_file; 
+}
+lx_shader_properties;
 
 /**
  * @brief Create a shader program directly from vertex and fragment shader
@@ -96,37 +149,26 @@ typedef unsigned int lx_shader;
  * The caller is responsible for destroying the shader with `lx_shader_destroy`
  * when they are done with it.
  *
+ * It is important to note that this is merely a convenience function. You are
+ * still responsible for everything on the OpenGL side.
+ *
  * @param vertex_file The file containing the vertex source code.
  * @param fragment_file The file containing the fragment source code.
  *
  * @return The shader program created with the given vertex and fragment
  * sources.
  */
-lx_shader lx_shader_create(const char* vertex_file, const char* fragment_file);
+unsigned int lx_shader_create(lx_shader_properties properties);
 
 /**
  * @brief Properly destroys the shader and frees any memory associated with it.
  * The shader cannot be used after calling this.
  *
- * @param shader The shader.
- */
-void lx_shader_destroy(lx_shader shader);
-
-/**
- * @brief Sets the given shader as the active one, all future rendering
- * functions will use this shader until specified otherwise.
+ * It is important to note that this is merely a convenience function. You are
+ * still responsible for everything on the OpenGL side.
  *
  * @param shader The shader.
  */
-void lx_shader_use(lx_shader shader);
-
-/**
- * @brief Draws a triangle on the screen. This shouldnt be used for actual
- * rendering, it is mainly a utility to test shaders or test that a window
- * was setup correctly.
- *
- * @param shader The shader.
- */
-void lx_shader_test(lx_shader shader);
+void lx_shader_destroy(unsigned int shader);
 
 LX_END_HEADER

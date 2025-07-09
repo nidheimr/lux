@@ -1,8 +1,6 @@
 #include "lux/gl.h"
 #include "lux/tools.h"
 
-#include "../tools/debug.h"
-
 #include <stdio.h>
 
 #ifdef _WIN32
@@ -1510,14 +1508,14 @@ int load_gl_procs()
     lx_glGetString = (PFNGLGETSTRINGPROC) load_proc("glGetString");
     if (!lx_glGetString)
     {
-        lx_set_last_error("failed to load required gl functions for a version check");
+        lx_produce_error("failed to load required gl functions for a version check");
         return 0;
     }
     
     int version = query_supported_gl_version(); 
     if (version == 0)
     {
-        lx_set_last_error("failed to query supported opengl version");
+        lx_produce_error("failed to query supported opengl version");
         return 0;
     }
     

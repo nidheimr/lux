@@ -13,7 +13,6 @@ typedef struct _lx_vec4 { float x, y, z, w; } lx_vec4;
 typedef struct _lx_mat2 { float m[4]; } lx_mat2;
 typedef struct _lx_mat3 { float m[9]; } lx_mat3;
 typedef struct _lx_mat4 { float m[16]; } lx_mat4;
-typedef struct _lx_quat { float x, y, z, w; } lx_quat;
 
 //
 //  utility
@@ -28,7 +27,7 @@ typedef struct _lx_quat { float x, y, z, w; } lx_quat;
  *
  * @return The clamped value.
  */
-float lx_clampf(float f, float min, float max);
+float lx_float_clamp(float f, float min, float max);
 
 /**
  * @brief Linearly interpolates between two float values.
@@ -39,7 +38,18 @@ float lx_clampf(float f, float min, float max);
  *
  * @return The interpolated float value.
  */
-float lx_lerpf(float a, float b, float t);
+float lx_float_lerp(float a, float b, float t);
+
+/**
+ * @brief Checks if two floats are equal within a given epsilon.
+ *
+ * @param a First float.
+ * @param b Second float.
+ * @param epsilon Tolerance for comparison.
+ *
+ * @return 1 if equal within epsilon, otherwise 0.
+ */
+int lx_float_equal(float a, float b, float epsilon);
 
 /**
  * @brief Converts degrees to radians.
@@ -58,17 +68,6 @@ float lx_deg_to_rad(float degrees);
  * @return Angle in degrees.
  */
 float lx_rad_to_deg(float radians);
-
-/**
- * @brief Checks if two floats are equal within a given epsilon.
- *
- * @param a First float.
- * @param b Second float.
- * @param epsilon Tolerance for comparison.
- *
- * @return 1 if equal within epsilon, otherwise 0.
- */
-int lx_float_equal(float a, float b, float epsilon);
 
 //
 //  vec2
@@ -652,7 +651,8 @@ lx_mat3 lx_mat3_zero();
 lx_mat3 lx_mat3_identity();
 
 /**
- * @brief Creates a 3x3 matrix from a 2x2 matrix (fills remaining values with identity components).
+ * @brief Creates a 3x3 matrix from a 2x2 matrix (fills remaining values with
+ * zero).
  *
  * @param m The 2x2 matrix.
  *
@@ -767,7 +767,8 @@ lx_mat4 lx_mat4_zero();
 lx_mat4 lx_mat4_identity();
 
 /**
- * @brief Creates a 4x4 matrix from a 2x2 matrix (fills remaining values with identity components).
+ * @brief Creates a 4x4 matrix from a 2x2 matrix (fills remaining values with
+ * zero).
  *
  * @param m The 2x2 matrix.
  *
@@ -776,7 +777,8 @@ lx_mat4 lx_mat4_identity();
 lx_mat4 lx_mat4_from_mat2(lx_mat2 m);
 
 /**
- * @brief Creates a 4x4 matrix from a 3x3 matrix (fills remaining values with identity components).
+ * @brief Creates a 4x4 matrix from a 3x3 matrix (fills remaining values with
+ * zero).
  *
  * @param m The 3x3 matrix.
  *
@@ -874,19 +876,7 @@ lx_mat4 lx_mat4_scale(lx_mat4 m, lx_vec3 scale);
  *
  * @return The rotated matrix.
  */
-lx_mat4 lx_mat4_rotate_axis_angle(lx_mat4 m, lx_vec3 axis, float degrees);
-
-/**
- * @brief Rotates a 4x4 matrix by Euler angles (pitch, yaw, roll).
- *
- * @param m The original matrix to rotate.
- * @param pitch Rotation around the X-axis in degrees.
- * @param yaw Rotation around the Y-axis in degrees.
- * @param roll Rotation around the Z-axis in degrees.
- *
- * @return The rotated matrix.
- */
-lx_mat4 lx_mat4_rotate_euler(lx_mat4 m, float pitch, float yaw, float roll);
+lx_mat4 lx_mat4_rotate(lx_mat4 m, lx_vec3 axis, float degrees);
 
 /**
  * @brief Creates a view matrix for a camera looking from eye towards center, with the specified up vector.
@@ -946,208 +936,5 @@ lx_vec4 lx_mat4_mul_vec4(lx_mat4 m, lx_vec4 v);
  * @return 1 if equal within epsilon, otherwise 0.
  */
 int lx_mat4_equal(lx_mat4 a, lx_mat4 b, float epsilon);
-
-//
-//  quat
-//
-
-/**
- * @brief Returns a quaternion with all components set to zero.
- *
- * @return A zero-initialized quaternion.
- */
-lx_quat lx_quat_zero();
-
-/**
- * @brief Returns the identity quaternion (no rotation).
- *
- * @return The identity quaternion.
- */
-lx_quat lx_quat_identity();
-
-/**
- * @brief Creates a quaternion from an axis and angle (in degrees).
- *
- * @param axis The axis to rotate around.
- * @param angle The angle of rotation in degrees.
- *
- * @return The resulting quaternion.
- */
-lx_quat lx_quat_from_axis_angle(lx_vec3 axis, float angle);
-
-/**
- * @brief Creates a quaternion from Euler angles (in degrees).
- *
- * @param pitch Rotation around the X-axis.
- * @param yaw Rotation around the Y-axis.
- * @param roll Rotation around the Z-axis.
- *
- * @return The resulting quaternion.
- */
-lx_quat lx_quat_from_euler(float pitch, float yaw, float roll);
-
-/**
- * @brief Converts a 3x3 rotation matrix to a quaternion.
- *
- * @param m The 3x3 matrix to convert.
- *
- * @return The resulting quaternion.
- */
-lx_quat lx_quat_from_mat3(lx_mat3 m);
-
-/**
- * @brief Converts a 4x4 matrix to a quaternion.
- *
- * @param m The 4x4 matrix to convert.
- *
- * @return The resulting quaternion.
- */
-lx_quat lx_quat_from_mat4(lx_mat4 m);
-
-/**
- * @brief Converts a quaternion to a 3x3 rotation matrix.
- *
- * @param q The quaternion to convert.
- *
- * @return The resulting 3x3 matrix.
- */
-lx_mat3 lx_quat_to_mat3(lx_quat q);
-
-/**
- * @brief Converts a quaternion to a 4x4 rotation matrix.
- *
- * @param q The quaternion to convert.
- *
- * @return The resulting 4x4 matrix.
- */
-lx_mat4 lx_quat_to_mat4(lx_quat q);
-
-/**
- * @brief Converts a quaternion to Euler angles (in degrees).
- *
- * @param q The quaternion to convert.
- *
- * @return A vector containing pitch (x), yaw (y), and roll (z) in degrees.
- */
-lx_vec3 lx_quat_to_euler(lx_quat q);
-
-/**
- * @brief Returns the conjugate of a quaternion.
- *
- * @param q The input quaternion.
- *
- * @return The conjugated quaternion.
- */
-lx_quat lx_quat4_conjugate(lx_quat q);
-
-/**
- * @brief Returns the inverse of a quaternion.
- *
- * @param q The input quaternion.
- *
- * @return The inverse quaternion.
- */
-lx_quat lx_quat4_inverse(lx_quat q);
-
-/**
- * @brief Normalizes the quaternion to unit length.
- *
- * @param q The input quaternion.
- *
- * @return The normalized quaternion.
- */
-lx_quat lx_quat4_normalize(lx_quat q);
-
-/**
- * @brief Returns the magnitude of a quaternion.
- *
- * @param q The input quaternion.
- *
- * @return The length of the quaternion.
- */
-float lx_quat4_magnitude(lx_quat q);
-
-/**
- * @brief Computes the dot product between two quaternions.
- *
- * @param a The first quaternion.
- * @param b The second quaternion.
- *
- * @return The dot product.
- */
-float lx_quat4_dot(lx_quat a, lx_quat b);
-
-/**
- * @brief Linearly interpolates between two quaternions.
- *
- * @param a The start quaternion.
- * @param b The end quaternion.
- * @param t Interpolation factor between 0 and 1.
- *
- * @return The interpolated quaternion.
- */
-lx_quat lx_quat4_lerp(lx_quat a, lx_quat b, float t);
-
-/**
- * @brief Spherically interpolates between two quaternions.
- *
- * @param a The start quaternion.
- * @param b The end quaternion.
- * @param t Interpolation factor between 0 and 1.
- *
- * @return The spherically interpolated quaternion.
- */
-lx_quat lx_quat4_slerp(lx_quat a, lx_quat b, float t);
-
-/**
- * @brief Multiplies two quaternions (combines rotations).
- *
- * @param a The first quaternion.
- * @param b The second quaternion.
- *
- * @return The result of the multiplication.
- */
-lx_quat lx_quat4_mul(lx_quat a, lx_quat b);
-
-/**
- * @brief Scales each component of the quaternion by a scalar.
- *
- * @param q The quaternion to scale.
- * @param scalar The scalar value.
- *
- * @return The scaled quaternion.
- */
-lx_quat lx_quat4_scale(lx_quat q, float scalar);
-
-/**
- * @brief Rotates a vector by a quaternion.
- *
- * @param q The quaternion to rotate with.
- * @param v The vector to rotate.
- *
- * @return The rotated vector.
- */
-lx_vec3 lx_quat4_rotate_vec3(lx_quat q, lx_vec3 v);
-
-/**
- * @brief Checks if two quaternions are equal within a given epsilon.
- *
- * @param a The first quaternion.
- * @param b The second quaternion.
- * @param epsilon Tolerance for comparison.
- *
- * @return 1 if equal within epsilon, 0 otherwise.
- */
-int lx_quat4_equal(lx_quat a, lx_quat b, float epsilon);
-
-/**
- * @brief Constructs a quaternion that looks in a given direction.
- *
- * @param direction The target direction to look toward.
- * @param up The up direction to align with.
- *
- * @return The resulting quaternion.
- */
-lx_quat lx_quat4_look_rotation(lx_vec3 direction, lx_vec3 up);
 
 LX_END_HEADER
