@@ -3,6 +3,7 @@
 #include "lux/gl.h"
 
 #include "../platform/xdg_linux.h"
+#include "../platform/xdg_deco_linux.h"
 #include "../gl/loader.h"
 #include "../tools/debug.h"
 #include "../input/querying.h"
@@ -14,6 +15,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <EGL/egl.h>
+#include <wayland-client-core.h>
 #include <wayland-client.h>
 #include <wayland-egl.h>
 
@@ -33,6 +35,7 @@ typedef struct _lx_window
     struct xdg_wm_base* xdg_wm_base;
     struct xdg_surface* xdg_surface;
     struct xdg_toplevel* xdg_toplevel;
+    struct zxdg_decoration_manager_v1* xdg_deco;
 
     // egl surface
     EGLDisplay* egl_display;
@@ -61,6 +64,7 @@ typedef struct _lx_window
 lx_window;
 
 static lx_window* internal_ref = NULL;
+static int xdg_ack = 0;
 
 //
 //  private - callbacks
@@ -74,13 +78,16 @@ static void wl_registry_global(void* data, struct wl_registry* registry, uint32_
 {
     lx_window* window = data;
 
-    if (strcmp(interface, "wl_compositor") == 0)
+    if (strcmp(interface, wl_compositor_interface.name) == 0)
         window->wl_compositor = wl_registry_bind(registry, name, &wl_compositor_interface, version);
 
-    if (strcmp(interface, "xdg_wm_base") == 0)
+    if (strcmp(interface, xdg_wm_base_interface.name) == 0)
         window->xdg_wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, version);
 
-    if (strcmp(interface, "wl_seat") == 0)
+    if (strcmp(interface, zxdg_decoration_manager_v1_interface.name) == 0)
+        window->xdg_deco = wl_registry_bind(registry, name, &zxdg_decoration_manager_v1_interface, version);
+            
+    if (strcmp(interface, wl_seat_interface.name) == 0)
     {
         window->wl_seat = wl_registry_bind(registry, name, &wl_seat_interface, version);
         
@@ -103,6 +110,7 @@ static void xdg_wm_base_ping(void* data, struct xdg_wm_base* wm_base, uint32_t s
 static void xdg_surface_configure(void* data, struct xdg_surface* surface, uint32_t serial)
 {
     xdg_surface_ack_configure(surface, serial);
+    xdg_ack = 1;
 }
 
 static void xdg_toplevel_close(void* data, struct xdg_toplevel* toplevel)
@@ -334,6 +342,22 @@ static const char* create_xdg_shell(lx_window* window)
 
     lx_produce_debug("-> created xdg toplevel");
 
+    // only if ssd are available, use them
+    if (window->xdg_deco) // set by wl_display_roundtrip and the registry_global callback
+    {
+        struct zxdg_toplevel_decoration_v1* deco = zxdg_decoration_manager_v1_get_toplevel_decoration(window->xdg_deco, window->xdg_toplevel); 
+        zxdg_toplevel_decoration_v1_set_mode(deco, ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+
+        lx_produce_debug("-> created and using server side decorations");
+    }
+    else
+        lx_produce_debug("-> server side decorations unavailable, defaulting to client side decoration");
+
+    // wait until xdg acks, otherwise it will error
+    wl_surface_commit(window->wl_surface);
+    while (xdg_ack == 0)
+        wl_display_dispatch(window->wl_display);
+     
     return NULL;
 }
 
@@ -399,13 +423,13 @@ static const char* create_egl_surface(lx_window* window)
     if (!window->egl_window)
         return "failed to create egl window";
 
-    lx_produce_debug("-> created egl window");
+    lx_produce_debug("-> created egl window"); 
 
     window->egl_surface = eglCreateWindowSurface(window->egl_display, config, (EGLNativeWindowType)window->egl_window, NULL);
     if (window->egl_surface == EGL_NO_SURFACE)
         return "failed to create egl surface";
 
-    lx_produce_debug("-> created egl surface"); 
+    lx_produce_debug("-> created egl surface");
 
     return NULL;
 }
@@ -577,7 +601,8 @@ void lx_window_update(lx_window* window)
     window->cur_frame_time = get_time();
     window->delta_time = window->cur_frame_time - window->last_frame_time;
 
-    wl_display_dispatch(window->wl_display);
+    wl_display_dispatch_pending(window->wl_display);
+    wl_display_flush(window->wl_display);
 }
 
 void lx_window_swap_buffers(lx_window* window)
