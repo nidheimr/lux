@@ -1,6 +1,6 @@
 #pragma once
 
-#include "external.h"
+#include "api.h"
 LX_BEGIN_HEADER
 
 //
@@ -27,7 +27,7 @@ typedef struct _lx_mat4 { float m[16]; } lx_mat4;
  *
  * @return The clamped value.
  */
-float lx_float_clamp(float f, float min, float max);
+LX_API float lx_float_clamp(float f, float min, float max);
 
 /**
  * @brief Linearly interpolates between two float values.
@@ -38,7 +38,7 @@ float lx_float_clamp(float f, float min, float max);
  *
  * @return The interpolated float value.
  */
-float lx_float_lerp(float a, float b, float t);
+LX_API float lx_float_lerp(float a, float b, float t);
 
 /**
  * @brief Checks if two floats are equal within a given epsilon.
@@ -49,7 +49,7 @@ float lx_float_lerp(float a, float b, float t);
  *
  * @return 1 if equal within epsilon, otherwise 0.
  */
-int lx_float_equal(float a, float b, float epsilon);
+LX_API int lx_float_equal(float a, float b, float epsilon);
 
 /**
  * @brief Converts degrees to radians.
@@ -58,7 +58,7 @@ int lx_float_equal(float a, float b, float epsilon);
  *
  * @return Angle in radians.
  */
-float lx_deg_to_rad(float degrees);
+LX_API float lx_deg_to_rad(float degrees);
 
 /**
  * @brief Converts radians to degrees.
@@ -67,7 +67,7 @@ float lx_deg_to_rad(float degrees);
  *
  * @return Angle in degrees.
  */
-float lx_rad_to_deg(float radians);
+LX_API float lx_rad_to_deg(float radians);
 
 //
 //  vec2
@@ -78,7 +78,7 @@ float lx_rad_to_deg(float radians);
  *
  * @return A 2D vector with all components set to zero.
  */
-lx_vec2 lx_vec2_zero();
+LX_API lx_vec2 lx_vec2_zero();
 
 /**
  * @brief Creates a 2D vector from a 3D vector by dropping the z component.
@@ -87,7 +87,7 @@ lx_vec2 lx_vec2_zero();
  *
  * @return A 2D vector.
  */
-lx_vec2 lx_vec2_from_vec3(lx_vec3 v);
+LX_API lx_vec2 lx_vec2_from_vec3(lx_vec3 v);
 
 /**
  * @brief Creates a 2D vector from a 4D vector by dropping the z and w components.
@@ -96,7 +96,7 @@ lx_vec2 lx_vec2_from_vec3(lx_vec3 v);
  *
  * @return A 2D vector.
  */
-lx_vec2 lx_vec2_from_vec4(lx_vec4 v);
+LX_API lx_vec2 lx_vec2_from_vec4(lx_vec4 v);
 
 /**
  * @brief Adds two 2D vectors.
@@ -106,7 +106,7 @@ lx_vec2 lx_vec2_from_vec4(lx_vec4 v);
  *
  * @return The sum of the vectors.
  */
-lx_vec2 lx_vec2_add(lx_vec2 a, lx_vec2 b);
+LX_API lx_vec2 lx_vec2_add(lx_vec2 a, lx_vec2 b);
 
 /**
  * @brief Subtracts one 2D vector from another.
@@ -116,7 +116,7 @@ lx_vec2 lx_vec2_add(lx_vec2 a, lx_vec2 b);
  *
  * @return The result of a - b.
  */
-lx_vec2 lx_vec2_sub(lx_vec2 a, lx_vec2 b);
+LX_API lx_vec2 lx_vec2_sub(lx_vec2 a, lx_vec2 b);
 
 /**
  * @brief Multiplies two 2D vectors component-wise.
@@ -126,7 +126,7 @@ lx_vec2 lx_vec2_sub(lx_vec2 a, lx_vec2 b);
  *
  * @return The component-wise product.
  */
-lx_vec2 lx_vec2_mul(lx_vec2 a, lx_vec2 b);
+LX_API lx_vec2 lx_vec2_mul(lx_vec2 a, lx_vec2 b);
 
 /**
  * @brief Scales a 2D vector by a scalar.
@@ -136,7 +136,7 @@ lx_vec2 lx_vec2_mul(lx_vec2 a, lx_vec2 b);
  *
  * @return The scaled vector.
  */
-lx_vec2 lx_vec2_scale_by_scalar(lx_vec2 v, float scale);
+LX_API lx_vec2 lx_vec2_scale_by_scalar(lx_vec2 v, float scale);
 
 /**
  * @brief Normalizes a 2D vector.
@@ -145,7 +145,7 @@ lx_vec2 lx_vec2_scale_by_scalar(lx_vec2 v, float scale);
  *
  * @return The normalized vector.
  */
-lx_vec2 lx_vec2_normalize(lx_vec2 v);
+LX_API lx_vec2 lx_vec2_normalize(lx_vec2 v);
 
 /**
  * @brief Linearly interpolates between two 2D vectors.
@@ -156,7 +156,7 @@ lx_vec2 lx_vec2_normalize(lx_vec2 v);
  *
  * @return The interpolated vector.
  */
-lx_vec2 lx_vec2_lerp(lx_vec2 a, lx_vec2 b, float t);
+LX_API lx_vec2 lx_vec2_lerp(lx_vec2 a, lx_vec2 b, float t);
 
 /**
  * @brief Clamps each component of a 2D vector between the corresponding components of min and max.
@@ -167,7 +167,7 @@ lx_vec2 lx_vec2_lerp(lx_vec2 a, lx_vec2 b, float t);
  *
  * @return The clamped vector.
  */
-lx_vec2 lx_vec2_clamp(lx_vec2 v, lx_vec2 min, lx_vec2 max);
+LX_API lx_vec2 lx_vec2_clamp(lx_vec2 v, lx_vec2 min, lx_vec2 max);
 
 /**
  * @brief Computes the dot product of two 2D vectors.
@@ -177,8 +177,7 @@ lx_vec2 lx_vec2_clamp(lx_vec2 v, lx_vec2 min, lx_vec2 max);
  *
  * @return The dot product.
  */
-float lx_vec2_dot(lx_vec2 a, lx_vec2 b);
-
+LX_API float lx_vec2_dot(lx_vec2 a, lx_vec2 b);
 
 /**
  * @brief Computes the magnitude of a 2D vector.
@@ -187,7 +186,7 @@ float lx_vec2_dot(lx_vec2 a, lx_vec2 b);
  *
  * @return The length of the vector.
  */
-float lx_vec2_magnitude(lx_vec2 v);
+LX_API float lx_vec2_magnitude(lx_vec2 v);
 
 /**
  * @brief Computes the squared magnitude of a 2D vector.
@@ -196,7 +195,7 @@ float lx_vec2_magnitude(lx_vec2 v);
  *
  * @return The squared length of the vector.
  */
-float lx_vec2_magnitude_squared(lx_vec2 v);
+LX_API float lx_vec2_magnitude_squared(lx_vec2 v);
 
 /**
  * @brief Checks if two 2D vectors are equal within a given epsilon.
@@ -207,7 +206,7 @@ float lx_vec2_magnitude_squared(lx_vec2 v);
  *
  * @return 1 if equal within epsilon, otherwise 0.
  */
-int lx_vec2_equal(lx_vec2 a, lx_vec2 b, float epsilon);
+LX_API int lx_vec2_equal(lx_vec2 a, lx_vec2 b, float epsilon);
 
 //
 //  vec3
@@ -218,7 +217,7 @@ int lx_vec2_equal(lx_vec2 a, lx_vec2 b, float epsilon);
  *
  * @return A 3D vector with all components set to zero.
  */
-lx_vec3 lx_vec3_zero();
+LX_API lx_vec3 lx_vec3_zero();
 
 /**
  * @brief Creates a 3D vector from a 2D vector, setting z to 0.
@@ -227,7 +226,7 @@ lx_vec3 lx_vec3_zero();
  *
  * @return A 3D vector.
  */
-lx_vec3 lx_vec3_from_vec2(lx_vec2 v);
+LX_API lx_vec3 lx_vec3_from_vec2(lx_vec2 v);
 
 /**
  * @brief Creates a 3D vector from a 4D vector by dropping the w component.
@@ -236,7 +235,7 @@ lx_vec3 lx_vec3_from_vec2(lx_vec2 v);
  *
  * @return A 3D vector.
  */
-lx_vec3 lx_vec3_from_vec4(lx_vec4 v);
+LX_API lx_vec3 lx_vec3_from_vec4(lx_vec4 v);
 
 /**
  * @brief Adds two 3D vectors.
@@ -246,7 +245,7 @@ lx_vec3 lx_vec3_from_vec4(lx_vec4 v);
  *
  * @return The sum of the vectors.
  */
-lx_vec3 lx_vec3_add(lx_vec3 a, lx_vec3 b);
+LX_API lx_vec3 lx_vec3_add(lx_vec3 a, lx_vec3 b);
 
 /**
  * @brief Subtracts one 3D vector from another.
@@ -256,7 +255,7 @@ lx_vec3 lx_vec3_add(lx_vec3 a, lx_vec3 b);
  *
  * @return The result of a - b.
  */
-lx_vec3 lx_vec3_sub(lx_vec3 a, lx_vec3 b);
+LX_API lx_vec3 lx_vec3_sub(lx_vec3 a, lx_vec3 b);
 
 /**
  * @brief Multiplies two 3D vectors component-wise.
@@ -266,7 +265,7 @@ lx_vec3 lx_vec3_sub(lx_vec3 a, lx_vec3 b);
  *
  * @return The component-wise product.
  */
-lx_vec3 lx_vec3_mul(lx_vec3 a, lx_vec3 b);
+LX_API lx_vec3 lx_vec3_mul(lx_vec3 a, lx_vec3 b);
 
 /**
  * @brief Scales a 3D vector by a scalar.
@@ -276,7 +275,7 @@ lx_vec3 lx_vec3_mul(lx_vec3 a, lx_vec3 b);
  *
  * @return The scaled vector.
  */
-lx_vec3 lx_vec3_scale_by_scalar(lx_vec3 v, float scale);
+LX_API lx_vec3 lx_vec3_scale_by_scalar(lx_vec3 v, float scale);
 
 /**
  * @brief Normalizes a 3D vector.
@@ -285,7 +284,7 @@ lx_vec3 lx_vec3_scale_by_scalar(lx_vec3 v, float scale);
  *
  * @return The normalized vector.
  */
-lx_vec3 lx_vec3_normalize(lx_vec3 v);
+LX_API lx_vec3 lx_vec3_normalize(lx_vec3 v);
 
 /**
  * @brief Linearly interpolates between two 3D vectors.
@@ -296,7 +295,7 @@ lx_vec3 lx_vec3_normalize(lx_vec3 v);
  *
  * @return The interpolated vector.
  */
-lx_vec3 lx_vec3_lerp(lx_vec3 a, lx_vec3 b, float t);
+LX_API lx_vec3 lx_vec3_lerp(lx_vec3 a, lx_vec3 b, float t);
 
 /**
  * @brief Clamps each component of a 3D vector between the corresponding components of min and max.
@@ -307,7 +306,7 @@ lx_vec3 lx_vec3_lerp(lx_vec3 a, lx_vec3 b, float t);
  *
  * @return The clamped vector.
  */
-lx_vec3 lx_vec3_clamp(lx_vec3 v, lx_vec3 min, lx_vec3 max);
+LX_API lx_vec3 lx_vec3_clamp(lx_vec3 v, lx_vec3 min, lx_vec3 max);
 
 /**
  * @brief Reflects a vector around a normal.
@@ -317,7 +316,7 @@ lx_vec3 lx_vec3_clamp(lx_vec3 v, lx_vec3 min, lx_vec3 max);
  *
  * @return The reflected vector.
  */
-lx_vec3 lx_vec3_reflect(lx_vec3 i, lx_vec3 n);
+LX_API lx_vec3 lx_vec3_reflect(lx_vec3 i, lx_vec3 n);
 
 /**
  * @brief Computes the dot product of two 3D vectors.
@@ -327,7 +326,7 @@ lx_vec3 lx_vec3_reflect(lx_vec3 i, lx_vec3 n);
  *
  * @return The dot product.
  */
-float lx_vec3_dot(lx_vec3 a, lx_vec3 b);
+LX_API float lx_vec3_dot(lx_vec3 a, lx_vec3 b);
 
 /**
  * @brief Computes the magnitude of a 3D vector.
@@ -336,7 +335,7 @@ float lx_vec3_dot(lx_vec3 a, lx_vec3 b);
  *
  * @return The length of the vector.
  */
-float lx_vec3_magnitude(lx_vec3 v);
+LX_API float lx_vec3_magnitude(lx_vec3 v);
 
 /**
  * @brief Computes the squared magnitude of a 3D vector.
@@ -345,7 +344,7 @@ float lx_vec3_magnitude(lx_vec3 v);
  *
  * @return The squared length of the vector.
  */
-float lx_vec3_magnitude_squared(lx_vec3 v);
+LX_API float lx_vec3_magnitude_squared(lx_vec3 v);
 
 /**
  * @brief Computes the distance between two 3D vectors.
@@ -355,7 +354,7 @@ float lx_vec3_magnitude_squared(lx_vec3 v);
  *
  * @return The distance between the vectors.
  */
-float lx_vec3_distance(lx_vec3 a, lx_vec3 b);
+LX_API float lx_vec3_distance(lx_vec3 a, lx_vec3 b);
 
 /**
  * @brief Checks if two 3D vectors are equal within a given epsilon.
@@ -366,7 +365,7 @@ float lx_vec3_distance(lx_vec3 a, lx_vec3 b);
  *
  * @return 1 if equal within epsilon, otherwise 0.
  */
-int lx_vec3_equal(lx_vec3 a, lx_vec3 b, float epsilon);
+LX_API int lx_vec3_equal(lx_vec3 a, lx_vec3 b, float epsilon);
 
 /**
  * @brief Computes the cross product of two 3D vectors.
@@ -376,7 +375,7 @@ int lx_vec3_equal(lx_vec3 a, lx_vec3 b, float epsilon);
  *
  * @return The cross product.
  */
-lx_vec3 lx_vec3_cross(lx_vec3 a, lx_vec3 b);
+LX_API lx_vec3 lx_vec3_cross(lx_vec3 a, lx_vec3 b);
 
 //
 //  vec4
@@ -387,7 +386,7 @@ lx_vec3 lx_vec3_cross(lx_vec3 a, lx_vec3 b);
  *
  * @return A 4D vector with all components set to zero.
  */
-lx_vec4 lx_vec4_zero();
+LX_API lx_vec4 lx_vec4_zero();
 
 /**
  * @brief Creates a 4D vector from a 2D vector, setting z and w to 0.
@@ -396,7 +395,7 @@ lx_vec4 lx_vec4_zero();
  *
  * @return A 4D vector.
  */
-lx_vec4 lx_vec4_from_vec2(lx_vec2 v);
+LX_API lx_vec4 lx_vec4_from_vec2(lx_vec2 v);
 
 /**
  * @brief Creates a 4D vector from a 3D vector, setting w to 0.
@@ -405,7 +404,7 @@ lx_vec4 lx_vec4_from_vec2(lx_vec2 v);
  *
  * @return A 4D vector.
  */
-lx_vec4 lx_vec4_from_vec3(lx_vec3 v);
+LX_API lx_vec4 lx_vec4_from_vec3(lx_vec3 v);
 
 /**
  * @brief Adds two 4D vectors.
@@ -415,7 +414,7 @@ lx_vec4 lx_vec4_from_vec3(lx_vec3 v);
  *
  * @return The sum of the vectors.
  */
-lx_vec4 lx_vec4_add(lx_vec4 a, lx_vec4 b);
+LX_API lx_vec4 lx_vec4_add(lx_vec4 a, lx_vec4 b);
 
 /**
  * @brief Subtracts one 4D vector from another.
@@ -425,7 +424,7 @@ lx_vec4 lx_vec4_add(lx_vec4 a, lx_vec4 b);
  *
  * @return The result of a - b.
  */
-lx_vec4 lx_vec4_sub(lx_vec4 a, lx_vec4 b);
+LX_API lx_vec4 lx_vec4_sub(lx_vec4 a, lx_vec4 b);
 
 /**
  * @brief Multiplies two 4D vectors component-wise.
@@ -435,7 +434,7 @@ lx_vec4 lx_vec4_sub(lx_vec4 a, lx_vec4 b);
  *
  * @return The component-wise product.
  */
-lx_vec4 lx_vec4_mul(lx_vec4 a, lx_vec4 b);
+LX_API lx_vec4 lx_vec4_mul(lx_vec4 a, lx_vec4 b);
 
 /**
  * @brief Scales a 4D vector by a scalar.
@@ -445,7 +444,7 @@ lx_vec4 lx_vec4_mul(lx_vec4 a, lx_vec4 b);
  *
  * @return The scaled vector.
  */
-lx_vec4 lx_vec4_scale_by_scalar(lx_vec4 v, float scale);
+LX_API lx_vec4 lx_vec4_scale_by_scalar(lx_vec4 v, float scale);
 
 /**
  * @brief Normalizes a 4D vector.
@@ -454,7 +453,7 @@ lx_vec4 lx_vec4_scale_by_scalar(lx_vec4 v, float scale);
  *
  * @return The normalized vector.
  */
-lx_vec4 lx_vec4_normalize(lx_vec4 v);
+LX_API lx_vec4 lx_vec4_normalize(lx_vec4 v);
 
 /**
  * @brief Linearly interpolates between two 4D vectors.
@@ -465,7 +464,7 @@ lx_vec4 lx_vec4_normalize(lx_vec4 v);
  *
  * @return The interpolated vector.
  */
-lx_vec4 lx_vec4_lerp(lx_vec4 a, lx_vec4 b, float t);
+LX_API lx_vec4 lx_vec4_lerp(lx_vec4 a, lx_vec4 b, float t);
 
 /**
  * @brief Clamps each component of a 4D vector between the corresponding components of min and max.
@@ -476,7 +475,7 @@ lx_vec4 lx_vec4_lerp(lx_vec4 a, lx_vec4 b, float t);
  *
  * @return The clamped vector.
  */
-lx_vec4 lx_vec4_clamp(lx_vec4 v, lx_vec4 min, lx_vec4 max);
+LX_API lx_vec4 lx_vec4_clamp(lx_vec4 v, lx_vec4 min, lx_vec4 max);
 
 /**
  * @brief Computes the dot product of two 4D vectors.
@@ -486,7 +485,7 @@ lx_vec4 lx_vec4_clamp(lx_vec4 v, lx_vec4 min, lx_vec4 max);
  *
  * @return The dot product.
  */
-float lx_vec4_dot(lx_vec4 a, lx_vec4 b);
+LX_API float lx_vec4_dot(lx_vec4 a, lx_vec4 b);
 
 /**
  * @brief Computes the magnitude of a 4D vector.
@@ -495,7 +494,7 @@ float lx_vec4_dot(lx_vec4 a, lx_vec4 b);
  *
  * @return The length of the vector.
  */
-float lx_vec4_magnitude(lx_vec4 v);
+LX_API float lx_vec4_magnitude(lx_vec4 v);
 
 /**
  * @brief Computes the squared magnitude of a 4D vector.
@@ -504,7 +503,7 @@ float lx_vec4_magnitude(lx_vec4 v);
  *
  * @return The squared length of the vector.
  */
-float lx_vec4_magnitude_squared(lx_vec4 v);
+LX_API float lx_vec4_magnitude_squared(lx_vec4 v);
 
 /**
  * @brief Checks if two 4D vectors are equal within a given epsilon.
@@ -515,7 +514,7 @@ float lx_vec4_magnitude_squared(lx_vec4 v);
  *
  * @return 1 if equal within epsilon, otherwise 0.
  */
-int lx_vec4_equal(lx_vec4 a, lx_vec4 b, float epsilon);
+LX_API int lx_vec4_equal(lx_vec4 a, lx_vec4 b, float epsilon);
 
 //
 //  mat2
@@ -526,14 +525,14 @@ int lx_vec4_equal(lx_vec4 a, lx_vec4 b, float epsilon);
  *
  * @return A 2x2 matrix with all elements set to zero.
  */
-lx_mat2 lx_mat2_zero();
+LX_API lx_mat2 lx_mat2_zero();
 
 /**
  * @brief Returns a 2x2 identity matrix.
  *
  * @return A 2x2 identity matrix.
  */
-lx_mat2 lx_mat2_identity();
+LX_API lx_mat2 lx_mat2_identity();
 
 /**
  * @brief Creates a 2x2 matrix from the top-left of a 3x3 matrix.
@@ -542,7 +541,7 @@ lx_mat2 lx_mat2_identity();
  *
  * @return A 2x2 matrix.
  */
-lx_mat2 lx_mat2_from_mat3(lx_mat3 m);
+LX_API lx_mat2 lx_mat2_from_mat3(lx_mat3 m);
 
 /**
  * @brief Creates a 2x2 matrix from the top-left of a 4x4 matrix.
@@ -551,7 +550,7 @@ lx_mat2 lx_mat2_from_mat3(lx_mat3 m);
  *
  * @return A 2x2 matrix.
  */
-lx_mat2 lx_mat2_from_mat4(lx_mat4 m);
+LX_API lx_mat2 lx_mat2_from_mat4(lx_mat4 m);
 
 /**
  * @brief Adds two 2x2 matrices.
@@ -561,7 +560,7 @@ lx_mat2 lx_mat2_from_mat4(lx_mat4 m);
  *
  * @return The sum of the matrices.
  */
-lx_mat2 lx_mat2_add(lx_mat2 a, lx_mat2 b);
+LX_API lx_mat2 lx_mat2_add(lx_mat2 a, lx_mat2 b);
 
 /**
  * @brief Subtracts one 2x2 matrix from another.
@@ -571,7 +570,7 @@ lx_mat2 lx_mat2_add(lx_mat2 a, lx_mat2 b);
  *
  * @return The result of a - b.
  */
-lx_mat2 lx_mat2_sub(lx_mat2 a, lx_mat2 b);
+LX_API lx_mat2 lx_mat2_sub(lx_mat2 a, lx_mat2 b);
 
 /**
  * @brief Multiplies two 2x2 matrices.
@@ -581,7 +580,7 @@ lx_mat2 lx_mat2_sub(lx_mat2 a, lx_mat2 b);
  *
  * @return The matrix product a * b.
  */
-lx_mat2 lx_mat2_mul(lx_mat2 a, lx_mat2 b);
+LX_API lx_mat2 lx_mat2_mul(lx_mat2 a, lx_mat2 b);
 
 /**
  * @brief Scales a 2x2 matrix by a scalar.
@@ -591,7 +590,7 @@ lx_mat2 lx_mat2_mul(lx_mat2 a, lx_mat2 b);
  *
  * @return The scaled matrix.
  */
-lx_mat2 lx_mat2_scale_by_scalar(lx_mat2 a, float scale);
+LX_API lx_mat2 lx_mat2_scale_by_scalar(lx_mat2 a, float scale);
 
 /**
  * @brief Returns the transpose of a 2x2 matrix.
@@ -600,7 +599,7 @@ lx_mat2 lx_mat2_scale_by_scalar(lx_mat2 a, float scale);
  *
  * @return The transposed matrix.
  */
-lx_mat2 lx_mat2_transpose(lx_mat2 m);
+LX_API lx_mat2 lx_mat2_transpose(lx_mat2 m);
 
 /**
  * @brief Returns the inverse of a 2x2 matrix.
@@ -609,7 +608,7 @@ lx_mat2 lx_mat2_transpose(lx_mat2 m);
  *
  * @return The inverse matrix.
  */
-lx_mat2 lx_mat2_inverse(lx_mat2 m);
+LX_API lx_mat2 lx_mat2_inverse(lx_mat2 m);
 
 /**
  * @brief Multiplies a 2x2 matrix by a 2D vector.
@@ -619,7 +618,7 @@ lx_mat2 lx_mat2_inverse(lx_mat2 m);
  *
  * @return The resulting vector.
  */
-lx_vec2 lx_mat2_mul_vec2(lx_mat2 m, lx_vec2 v);
+LX_API lx_vec2 lx_mat2_mul_vec2(lx_mat2 m, lx_vec2 v);
 
 /**
  * @brief Checks if two 2x2 matrices are equal within a given epsilon.
@@ -630,7 +629,7 @@ lx_vec2 lx_mat2_mul_vec2(lx_mat2 m, lx_vec2 v);
  *
  * @return 1 if equal within epsilon, otherwise 0.
  */
-int lx_mat2_equal(lx_mat2 a, lx_mat2 b, float epsilon);
+LX_API int lx_mat2_equal(lx_mat2 a, lx_mat2 b, float epsilon);
 
 //
 //  mat3
@@ -641,14 +640,14 @@ int lx_mat2_equal(lx_mat2 a, lx_mat2 b, float epsilon);
  *
  * @return A 3x3 matrix with all elements set to zero.
  */
-lx_mat3 lx_mat3_zero();
+LX_API lx_mat3 lx_mat3_zero();
 
 /**
  * @brief Returns a 3x3 identity matrix.
  *
  * @return A 3x3 identity matrix.
  */
-lx_mat3 lx_mat3_identity();
+LX_API lx_mat3 lx_mat3_identity();
 
 /**
  * @brief Creates a 3x3 matrix from a 2x2 matrix (fills remaining values with
@@ -658,7 +657,7 @@ lx_mat3 lx_mat3_identity();
  *
  * @return A 3x3 matrix.
  */
-lx_mat3 lx_mat3_from_mat2(lx_mat2 m);
+LX_API lx_mat3 lx_mat3_from_mat2(lx_mat2 m);
 
 /**
  * @brief Creates a 3x3 matrix from the top-left of a 4x4 matrix.
@@ -667,7 +666,7 @@ lx_mat3 lx_mat3_from_mat2(lx_mat2 m);
  *
  * @return A 3x3 matrix.
  */
-lx_mat3 lx_mat3_from_mat4(lx_mat4 m);
+LX_API lx_mat3 lx_mat3_from_mat4(lx_mat4 m);
 
 /**
  * @brief Adds two 3x3 matrices.
@@ -677,7 +676,7 @@ lx_mat3 lx_mat3_from_mat4(lx_mat4 m);
  *
  * @return The sum of the matrices.
  */
-lx_mat3 lx_mat3_add(lx_mat3 a, lx_mat3 b);
+LX_API lx_mat3 lx_mat3_add(lx_mat3 a, lx_mat3 b);
 
 /**
  * @brief Subtracts one 3x3 matrix from another.
@@ -687,7 +686,7 @@ lx_mat3 lx_mat3_add(lx_mat3 a, lx_mat3 b);
  *
  * @return The result of a - b.
  */
-lx_mat3 lx_mat3_sub(lx_mat3 a, lx_mat3 b);
+LX_API lx_mat3 lx_mat3_sub(lx_mat3 a, lx_mat3 b);
 
 /**
  * @brief Multiplies two 3x3 matrices.
@@ -697,7 +696,7 @@ lx_mat3 lx_mat3_sub(lx_mat3 a, lx_mat3 b);
  *
  * @return The matrix product a * b.
  */
-lx_mat3 lx_mat3_mul(lx_mat3 a, lx_mat3 b);
+LX_API lx_mat3 lx_mat3_mul(lx_mat3 a, lx_mat3 b);
 
 /**
  * @brief Scales a 3x3 matrix by a scalar.
@@ -707,7 +706,7 @@ lx_mat3 lx_mat3_mul(lx_mat3 a, lx_mat3 b);
  *
  * @return The scaled matrix.
  */
-lx_mat3 lx_mat3_scale_by_scalar(lx_mat3 a, float scale);
+LX_API lx_mat3 lx_mat3_scale_by_scalar(lx_mat3 a, float scale);
 
 /**
  * @brief Returns the transpose of a 3x3 matrix.
@@ -716,7 +715,7 @@ lx_mat3 lx_mat3_scale_by_scalar(lx_mat3 a, float scale);
  *
  * @return The transposed matrix.
  */
-lx_mat3 lx_mat3_transpose(lx_mat3 m);
+LX_API lx_mat3 lx_mat3_transpose(lx_mat3 m);
 
 /**
  * @brief Returns the inverse of a 3x3 matrix.
@@ -725,7 +724,7 @@ lx_mat3 lx_mat3_transpose(lx_mat3 m);
  *
  * @return The inverse matrix.
  */
-lx_mat3 lx_mat3_inverse(lx_mat3 m);
+LX_API lx_mat3 lx_mat3_inverse(lx_mat3 m);
 
 /**
  * @brief Multiplies a 3x3 matrix by a 3D vector.
@@ -735,7 +734,7 @@ lx_mat3 lx_mat3_inverse(lx_mat3 m);
  *
  * @return The resulting vector.
  */
-lx_vec3 lx_mat3_mul_vec3(lx_mat3 m, lx_vec3 v);
+LX_API lx_vec3 lx_mat3_mul_vec3(lx_mat3 m, lx_vec3 v);
 
 /**
  * @brief Checks if two 3x3 matrices are equal within a given epsilon.
@@ -746,7 +745,7 @@ lx_vec3 lx_mat3_mul_vec3(lx_mat3 m, lx_vec3 v);
  *
  * @return 1 if equal within epsilon, otherwise 0.
  */
-int lx_mat3_equal(lx_mat3 a, lx_mat3 b, float epsilon);
+LX_API int lx_mat3_equal(lx_mat3 a, lx_mat3 b, float epsilon);
 
 //
 //  mat4
@@ -757,14 +756,14 @@ int lx_mat3_equal(lx_mat3 a, lx_mat3 b, float epsilon);
  *
  * @return A 4x4 matrix with all elements set to zero.
  */
-lx_mat4 lx_mat4_zero();
+LX_API lx_mat4 lx_mat4_zero();
 
 /**
  * @brief Returns a 4x4 identity matrix.
  *
  * @return A 4x4 identity matrix.
  */
-lx_mat4 lx_mat4_identity();
+LX_API lx_mat4 lx_mat4_identity();
 
 /**
  * @brief Creates a 4x4 matrix from a 2x2 matrix (fills remaining values with
@@ -774,7 +773,7 @@ lx_mat4 lx_mat4_identity();
  *
  * @return A 4x4 matrix.
  */
-lx_mat4 lx_mat4_from_mat2(lx_mat2 m);
+LX_API lx_mat4 lx_mat4_from_mat2(lx_mat2 m);
 
 /**
  * @brief Creates a 4x4 matrix from a 3x3 matrix (fills remaining values with
@@ -784,7 +783,7 @@ lx_mat4 lx_mat4_from_mat2(lx_mat2 m);
  *
  * @return A 4x4 matrix.
  */
-lx_mat4 lx_mat4_from_mat3(lx_mat3 m);
+LX_API lx_mat4 lx_mat4_from_mat3(lx_mat3 m);
 
 /**
  * @brief Adds two 4x4 matrices.
@@ -794,7 +793,7 @@ lx_mat4 lx_mat4_from_mat3(lx_mat3 m);
  *
  * @return The sum of the matrices.
  */
-lx_mat4 lx_mat4_add(lx_mat4 a, lx_mat4 b);
+LX_API lx_mat4 lx_mat4_add(lx_mat4 a, lx_mat4 b);
 
 /**
  * @brief Subtracts one 4x4 matrix from another.
@@ -804,7 +803,7 @@ lx_mat4 lx_mat4_add(lx_mat4 a, lx_mat4 b);
  *
  * @return The result of a - b.
  */
-lx_mat4 lx_mat4_sub(lx_mat4 a, lx_mat4 b);
+LX_API lx_mat4 lx_mat4_sub(lx_mat4 a, lx_mat4 b);
 
 /**
  * @brief Multiplies two 4x4 matrices.
@@ -814,7 +813,7 @@ lx_mat4 lx_mat4_sub(lx_mat4 a, lx_mat4 b);
  *
  * @return The matrix product a * b.
  */
-lx_mat4 lx_mat4_mul(lx_mat4 a, lx_mat4 b);
+LX_API lx_mat4 lx_mat4_mul(lx_mat4 a, lx_mat4 b);
 
 /**
  * @brief Scales a 4x4 matrix by a scalar.
@@ -824,7 +823,7 @@ lx_mat4 lx_mat4_mul(lx_mat4 a, lx_mat4 b);
  *
  * @return The scaled matrix.
  */
-lx_mat4 lx_mat4_scale_by_scalar(lx_mat4 a, float scale);
+LX_API lx_mat4 lx_mat4_scale_by_scalar(lx_mat4 a, float scale);
 
 /**
  * @brief Returns the transpose of a 4x4 matrix.
@@ -833,7 +832,7 @@ lx_mat4 lx_mat4_scale_by_scalar(lx_mat4 a, float scale);
  *
  * @return The transposed matrix.
  */
-lx_mat4 lx_mat4_transpose(lx_mat4 m);
+LX_API lx_mat4 lx_mat4_transpose(lx_mat4 m);
 
 /**
  * @brief Returns the inverse of a 4x4 matrix.
@@ -842,7 +841,7 @@ lx_mat4 lx_mat4_transpose(lx_mat4 m);
  *
  * @return The inverse matrix.
  */
-lx_mat4 lx_mat4_inverse(lx_mat4 m);
+LX_API lx_mat4 lx_mat4_inverse(lx_mat4 m);
 
 /**
  * @brief Applies a translation to the given 4x4 matrix.
@@ -852,7 +851,7 @@ lx_mat4 lx_mat4_inverse(lx_mat4 m);
  *
  * @return The translated matrix.
  */
-lx_mat4 lx_mat4_translate(lx_mat4 m, lx_vec3 translation);
+LX_API lx_mat4 lx_mat4_translate(lx_mat4 m, lx_vec3 translation);
 
 /**
  * @brief Applies scaling to the given 4x4 matrix.
@@ -862,7 +861,7 @@ lx_mat4 lx_mat4_translate(lx_mat4 m, lx_vec3 translation);
  *
  * @return The scaled matrix.
  */
-lx_mat4 lx_mat4_scale(lx_mat4 m, lx_vec3 scale);
+LX_API lx_mat4 lx_mat4_scale(lx_mat4 m, lx_vec3 scale);
 
 /**
  * @brief Rotates a 4x4 matrix around an arbitrary axis by a specified angle.
@@ -876,7 +875,7 @@ lx_mat4 lx_mat4_scale(lx_mat4 m, lx_vec3 scale);
  *
  * @return The rotated matrix.
  */
-lx_mat4 lx_mat4_rotate(lx_mat4 m, lx_vec3 axis, float degrees);
+LX_API lx_mat4 lx_mat4_rotate(lx_mat4 m, lx_vec3 axis, float degrees);
 
 /**
  * @brief Creates a view matrix for a camera looking from eye towards center, with the specified up vector.
@@ -887,7 +886,7 @@ lx_mat4 lx_mat4_rotate(lx_mat4 m, lx_vec3 axis, float degrees);
  *
  * @return The resulting view matrix.
  */
-lx_mat4 lx_mat4_look_at(lx_vec3 eye, lx_vec3 center, lx_vec3 up);
+LX_API lx_mat4 lx_mat4_look_at(lx_vec3 eye, lx_vec3 center, lx_vec3 up);
 
 
 /**
@@ -900,7 +899,7 @@ lx_mat4 lx_mat4_look_at(lx_vec3 eye, lx_vec3 center, lx_vec3 up);
  *
  * @return The perspective projection matrix.
  */
-lx_mat4 lx_mat4_perspective(float fov, float aspect, float near, float far);
+LX_API lx_mat4 lx_mat4_perspective(float fov, float aspect, float near, float far);
 
 /**
  * @brief Creates an orthographic projection matrix.
@@ -914,7 +913,7 @@ lx_mat4 lx_mat4_perspective(float fov, float aspect, float near, float far);
  *
  * @return The orthographic projection matrix.
  */
-lx_mat4 lx_mat4_orthographic(float left, float right, float bottom, float top, float near, float far);
+LX_API lx_mat4 lx_mat4_orthographic(float left, float right, float bottom, float top, float near, float far);
 
 /**
  * @brief Multiplies a 4x4 matrix by a 4D vector.
@@ -924,7 +923,7 @@ lx_mat4 lx_mat4_orthographic(float left, float right, float bottom, float top, f
  *
  * @return The resulting vector.
  */
-lx_vec4 lx_mat4_mul_vec4(lx_mat4 m, lx_vec4 v);
+LX_API lx_vec4 lx_mat4_mul_vec4(lx_mat4 m, lx_vec4 v);
 
 /**
  * @brief Checks if two 4x4 matrices are equal within a given epsilon.
@@ -935,6 +934,6 @@ lx_vec4 lx_mat4_mul_vec4(lx_mat4 m, lx_vec4 v);
  *
  * @return 1 if equal within epsilon, otherwise 0.
  */
-int lx_mat4_equal(lx_mat4 a, lx_mat4 b, float epsilon);
+LX_API int lx_mat4_equal(lx_mat4 a, lx_mat4 b, float epsilon);
 
 LX_END_HEADER

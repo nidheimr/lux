@@ -1,7 +1,4 @@
 #pragma once
 
-#include "lux/external.h"
-#include "lux/gl.h"
+#include "lux/api.h"
 #include "lux/math.h"
-#include "lux/output.h"
-#include "lux/tools.h"
