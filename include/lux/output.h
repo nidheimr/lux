@@ -11,6 +11,9 @@ typedef struct _lx_window lx_window;
 
 typedef void (*lx_window_resize_callback)(lx_window* window, int width, int height);
 
+typedef void (*lx_error_callback)(const char* err);
+typedef void (*lx_debug_callback)(const char* dbg);
+
 typedef struct _lx_window_properties
 {
     const char* title;
@@ -18,6 +21,9 @@ typedef struct _lx_window_properties
     int height;
 
     lx_window_resize_callback on_resize;
+
+    lx_error_callback on_error;
+    lx_debug_callback on_debug;
 }
 lx_window_properties;
 
@@ -27,9 +33,7 @@ lx_window_properties;
  * The caller is responsible for destroying the window with `lx_window_destroy`
  * when they are done with it.
  * 
- * @param title The title of the window.
- * @param width The width of the window.
- * @param height The height of the window.
+ * @param properties A window properties structure. 
  *
  * @return A pointer to the window.
  */
@@ -152,8 +156,7 @@ lx_shader_properties;
  * It is important to note that this is merely a convenience function. You are
  * still responsible for everything on the OpenGL side.
  *
- * @param vertex_file The file containing the vertex source code.
- * @param fragment_file The file containing the fragment source code.
+ * @param properties A shader properties structure. 
  *
  * @return The shader program created with the given vertex and fragment
  * sources.

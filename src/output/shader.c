@@ -25,7 +25,7 @@ static unsigned int create_shader_from_file(unsigned int type, const char* file)
     if (!success)
     {
         glGetShaderInfoLog(shader, 512, NULL, info);
-        lx_produce_error("failed to create shader, opengl produced error: %s", info);
+        produce_error("failed to create shader, opengl produced error: %s", info);
         return 0;
     }
 
@@ -42,19 +42,19 @@ unsigned int lx_shader_create(lx_shader_properties properties)
     PARAM_GUARD(properties.vertex_file == NULL, ("could not create shader with a null vertex file"), 0);
     PARAM_GUARD(properties.fragment_file == NULL, ("could not create shader with a null fragment file"), 0);
  
-    lx_produce_debug("creating shader from %s and %s", properties.vertex_file, properties.fragment_file);
+    produce_debug("creating shader from %s and %s", properties.vertex_file, properties.fragment_file);
 
     unsigned int vert = create_shader_from_file(GL_VERTEX_SHADER, properties.vertex_file);
     if (vert == 0)
         return 0;
 
-    lx_produce_debug("-> created vertex shader");
+    produce_debug("-> created vertex shader");
 
     unsigned int frag = create_shader_from_file(GL_FRAGMENT_SHADER, properties.fragment_file);
     if (frag == 0)
         return 0;
 
-    lx_produce_debug("-> created fragment shader");
+    produce_debug("-> created fragment shader");
     
     unsigned int program = glCreateProgram();
     glAttachShader(program, vert);
@@ -68,7 +68,7 @@ unsigned int lx_shader_create(lx_shader_properties properties)
     if (!success)
     {
         glGetProgramInfoLog(program, 512, NULL, info);
-        lx_produce_error("failed to create program, opengl produced error: %s", info);
+        produce_error("failed to create program, opengl produced error: %s", info);
         
         glDeleteShader(vert);
         glDeleteShader(frag);
@@ -76,12 +76,12 @@ unsigned int lx_shader_create(lx_shader_properties properties)
         return 0;
     }
 
-    lx_produce_debug("-> created shader program");
+    produce_debug("-> created shader program");
 
     glDeleteShader(vert);
     glDeleteShader(frag);
 
-    lx_produce_debug("finished creating shader");
+    produce_debug("finished creating shader");
     return program;
 }
 
@@ -90,9 +90,9 @@ void lx_shader_destroy(unsigned int shader)
     PARAM_GUARD(lx_glDeleteProgram == NULL, ("tried to destroy a shader before opengl functions were loaded"));
     PARAM_GUARD(glIsProgram(shader) == 0, ("tried to destroy a shader with an invalid id"));
 
-    lx_produce_debug("destroying shader with id %d", shader);
+    produce_debug("destroying shader with id %d", shader);
 
     glDeleteProgram(shader);
 
-    lx_produce_debug("finished destroying shader");
+    produce_debug("finished destroying shader");
 }

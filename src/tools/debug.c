@@ -6,41 +6,25 @@
 #include <stdio.h>
 
 //
-//	private
+//  private
 //
 
-static void standard_error_callback(const char* error)
+static lx_error_callback bound_errcb = NULL;
+static lx_debug_callback bound_dbgcb = NULL;
+
+void set_err_cb(lx_error_callback errcb)
 {
-    printf("%s %s\n", "\033[31mERROR \033[38;2;80;80;80m>> \033[0m", error);
+    bound_errcb = errcb;
 }
 
-static void standard_debug_callback(const char* debug)
+void set_dbg_cb(lx_debug_callback dbgcb)
 {
-    printf("%s %s\n", "\033[34mDEBUG \033[38;2;80;80;80m>> \033[0m", debug);
+    bound_dbgcb = dbgcb;
 }
 
-static lx_error_callback errcb = standard_error_callback;
-static lx_debug_callback dbgcb = standard_debug_callback;
-
-//
-//	public
-//
-
-void lx_set_error_callback(lx_error_callback callback)
+void produce_error(const char* fmt, ...)
 {
-    errcb = callback; 
-}
-
-void lx_set_debug_callback(lx_debug_callback callback)
-{
-    dbgcb = callback; 
-}
-
-void lx_produce_error(const char* fmt, ...)
-{
-    PARAM_GUARD(fmt == NULL, ("could not produce null error"));
-
-    if (errcb == NULL)
+    if (bound_errcb == NULL)
         return;
 
     va_list args;
@@ -50,14 +34,12 @@ void lx_produce_error(const char* fmt, ...)
     vsnprintf(err, 512, fmt, args);
 
     va_end(args);
-    errcb(err);
+    bound_errcb(err);
 }
 
-void lx_produce_debug(const char* fmt, ...)
+void produce_debug(const char* fmt, ...)
 {
-    PARAM_GUARD(fmt == NULL, ("could not produce null debug"));
-
-    if (dbgcb == NULL)
+    if (bound_dbgcb == NULL)
         return;
 
     va_list args;
@@ -67,5 +49,5 @@ void lx_produce_debug(const char* fmt, ...)
     vsnprintf(dbg, 512, fmt, args);
 
     va_end(args);
-    dbgcb(dbg);
+    bound_dbgcb(dbg);
 }
