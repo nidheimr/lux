@@ -2,15 +2,13 @@
 
 #include <math.h>
 
-//
-//  private
-//
+// private source
+// ----------------------------------------------------------------
 
 static const float PI = 3.14159265358979323846;
 
-//
-//  public
-//
+// public header
+// ----------------------------------------------------------------
 
 float lx_float_clamp(float f, float min, float max)
 {

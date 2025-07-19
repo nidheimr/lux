@@ -3,9 +3,8 @@
 #include "api.h"
 LX_BEGIN_HEADER
 
-//
-//  types
-//
+// types
+// ----------------------------------------------------------------
 
 typedef struct _lx_vec2 { float x, y; } lx_vec2;
 typedef struct _lx_vec3 { float x, y, z; } lx_vec3;
@@ -14,9 +13,8 @@ typedef struct _lx_mat2 { float m[4]; } lx_mat2;
 typedef struct _lx_mat3 { float m[9]; } lx_mat3;
 typedef struct _lx_mat4 { float m[16]; } lx_mat4;
 
-//
-//  utility
-//
+// utility
+// ----------------------------------------------------------------
 
 /**
  * @brief Clamps a float between a minimum and maximum value.
@@ -69,9 +67,8 @@ LX_API float lx_deg_to_rad(float degrees);
  */
 LX_API float lx_rad_to_deg(float radians);
 
-//
-//  vec2
-//
+// vec2
+// ----------------------------------------------------------------
 
 /**
  * @brief Returns a zero-initialized 2D vector.
@@ -208,9 +205,8 @@ LX_API float lx_vec2_magnitude_squared(lx_vec2 v);
  */
 LX_API int lx_vec2_equal(lx_vec2 a, lx_vec2 b, float epsilon);
 
-//
-//  vec3
-//
+// vec3
+// ----------------------------------------------------------------
 
 /**
  * @brief Returns a zero-initialized 3D vector.
@@ -377,9 +373,8 @@ LX_API int lx_vec3_equal(lx_vec3 a, lx_vec3 b, float epsilon);
  */
 LX_API lx_vec3 lx_vec3_cross(lx_vec3 a, lx_vec3 b);
 
-//
-//  vec4
-//
+// vec4
+// ----------------------------------------------------------------
 
 /**
  * @brief Returns a zero-initialized 4D vector.
@@ -516,9 +511,8 @@ LX_API float lx_vec4_magnitude_squared(lx_vec4 v);
  */
 LX_API int lx_vec4_equal(lx_vec4 a, lx_vec4 b, float epsilon);
 
-//
-//  mat2
-//
+// mat2
+// ----------------------------------------------------------------
 
 /**
  * @brief Returns a zero-initialized 2x2 matrix.
@@ -631,9 +625,8 @@ LX_API lx_vec2 lx_mat2_mul_vec2(lx_mat2 m, lx_vec2 v);
  */
 LX_API int lx_mat2_equal(lx_mat2 a, lx_mat2 b, float epsilon);
 
-//
-//  mat3
-//
+// mat3
+// ----------------------------------------------------------------
 
 /**
  * @brief Returns a zero-initialized 3x3 matrix.
@@ -747,9 +740,8 @@ LX_API lx_vec3 lx_mat3_mul_vec3(lx_mat3 m, lx_vec3 v);
  */
 LX_API int lx_mat3_equal(lx_mat3 a, lx_mat3 b, float epsilon);
 
-//
-//  mat4
-//
+// mat4
+// ----------------------------------------------------------------
 
 /**
  * @brief Returns a zero-initialized 4x4 matrix.
