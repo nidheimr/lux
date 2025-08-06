@@ -17,7 +17,7 @@ int main()
 {
     lx_init((lx_init_props){
         .title = "Lux Test",
-        .width = 12280,
+        .width = 1280,
         .height = 720,
 
         .on_resize = on_resize,
