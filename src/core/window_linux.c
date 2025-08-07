@@ -285,6 +285,11 @@ static int create_egl_surface()
 
     eglMakeCurrent(lt_store->window->egl_display, lt_store->window->egl_surface, lt_store->window->egl_surface, lt_store->window->egl_context);
 
+    if (eglSwapInterval(lt_store->window->egl_display, 1) == EGL_FALSE)
+    {
+        emit_error("failed to enable vertical sync");
+    }
+
     return 1;
 }
 

@@ -177,7 +177,7 @@ static int create_gl_context()
     PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT");
     if (!wglSwapIntervalEXT)
     {
-        emit_error("swap interval ext not available, cannot enable vsync");
+        emit_error("failed to enable vertical sync");
         return 0;
     }
 
