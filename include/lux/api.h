@@ -12,7 +12,7 @@
     #ifdef LX_BUILD
         #define LX_API __declspec(dllexport)
     #else
-        #define LX_API __declsepc(dllimport)
+        #define LX_API __declspec(dllimport)
     #endif
 #else
     #define LX_API

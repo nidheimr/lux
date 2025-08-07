@@ -43,5 +43,5 @@ double window_get_time();
 // gets the predicted fps of the window
 double window_get_fps();
 
-// gets the delta time betweenf frames
+// gets the delta time between frames
 double window_get_delta();

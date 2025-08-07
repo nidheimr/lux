@@ -29,7 +29,6 @@ typedef struct _window_store
     struct wl_egl_window* egl_window;
     EGLSurface* egl_surface;
 
-    int is_alive;
     double time_began;
     double last_frame_time;
     double cur_frame_time;

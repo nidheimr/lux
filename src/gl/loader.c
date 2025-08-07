@@ -17,6 +17,8 @@
 // private source
 // ----------------------------------------------------------------
 
+static int is_loaded_properly = 0;
+
 static int v1_0 = 0;
 static int v1_1 = 0;
 static int v1_2 = 0;
@@ -1539,6 +1541,7 @@ int gl_load()
     load_4_5(1);
     load_4_6(1);
 
+    is_loaded_properly = 1;
     return 1;
 }
 
@@ -1563,4 +1566,11 @@ void gl_unload()
     load_4_4(0);
     load_4_5(0);
     load_4_6(0);
+
+    is_loaded_properly = 0;
+}
+
+int gl_is_loaded()
+{
+    return is_loaded_properly;
 }
