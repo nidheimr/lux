@@ -1,6 +1,5 @@
 #include "core.h"
 #include "../debug/debug.h"
-#include "../gl/gl.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -23,9 +22,9 @@ typedef struct _window_store
 }
 window_store;
 
-typedef HGLRC (WINAPI *PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
-typedef BOOL (WINAPI *PFNWGLCHOOSEPIXELFORMATARBPROC)(HDC, const int*, const FLOAT*, UINT, int*, UINT*);
-typedef unsigned char* (WINAPI *PFNGLGETSTRINGPROC)(unsigned int);
+typedef HGLRC (WINAPI* PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
+typedef unsigned char* (WINAPI* PFNGLGETSTRINGPROC)(unsigned int);
+typedef BOOL (WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int);
 
 // private source
 // ---------------------------------------------------------------- 
@@ -43,7 +42,7 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM 
         lt_props.width = width;
         lt_props.height = height;
 
-        if (lt_props.on_resize != NULL && gl_is_loaded())
+        if (lt_props.on_resize != NULL && lt_store->gl_version > 0)
             lt_props.on_resize(width, height);
 
         break;
@@ -174,6 +173,15 @@ static int create_gl_context()
 
     wglMakeCurrent(lt_store->window->w32_dc, lt_store->window->w32_gl_ctx);
     wglDeleteContext(temp_ctx);
+
+    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT");
+    if (!wglSwapIntervalEXT)
+    {
+        emit_error("swap interval ext not available, cannot enable vsync");
+        return 0;
+    }
+
+    wglSwapIntervalEXT(1);
 
     return 1;
 }

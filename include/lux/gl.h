@@ -16,7 +16,7 @@ LX_BEGIN_HEADER
 #endif
 #define LX_GL_API_PTR LX_GL_API*
 
-// opengl 1.0 to 4.6 types and* definitions
+// opengl 1.0 to 4.6 types and definitions
 // ----------------------------------------------------------------
 
 typedef unsigned int GLenum;

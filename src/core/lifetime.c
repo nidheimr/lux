@@ -54,3 +54,14 @@ int lx_is_alive()
 {
     return lt_store == NULL ? 0 : lt_store->alive;
 }
+
+double lx_get_loaded_gl_version()
+{
+    if (lt_store == NULL)
+        return 0;
+
+    int major = lt_store->gl_version / 10000;
+    int minor = lt_store->gl_version % 10000;
+
+    return lt_store == NULL ? 0 : major + (minor / 10.0);
+}

@@ -10,7 +10,7 @@ typedef struct _window_store window_store;
 typedef struct _global_store
 {
     int alive;
-    double gl_version;
+    int gl_version;
 
     window_store* window;
 }

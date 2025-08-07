@@ -51,6 +51,14 @@ LX_API void lx_quit();
  */
 LX_API int lx_is_alive();
 
+/**
+ * @brief Returns the major and minor version of the OpenGL context that was
+ * created with initialisation.
+ *
+ * @return The OpenGL version.
+ */
+LX_API double lx_get_loaded_gl_version();
+
 // management
 // ----------------------------------------------------------------
 

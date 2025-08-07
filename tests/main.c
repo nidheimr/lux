@@ -24,18 +24,26 @@ int main()
         .on_error = on_error,
     });
 
+
     create_test_shader();
     create_test_cube();
+    printf("\033[?1049h");
 
     while (lx_is_alive())
     {
         lx_poll_events();
 
         draw_test_cube();
+       
+        printf("\033[2J");
+        printf("\033[H");
+        printf("gl version %g\n", lx_get_loaded_gl_version());
+        printf("fps %lf\n", lx_get_fps());
 
         lx_swap_buffers();
     }
 
+    printf("\033[?1049l");
     lx_quit();
     return 0;
 }
