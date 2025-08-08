@@ -25,7 +25,7 @@ if(PLATFORM_WINDOWS)
     list(FILTER lib_files EXCLUDE REGEX "_linux\\.c$")
     add_library(lux SHARED ${lib_files})
 
-    target_link_libraries(lux PRIVATE
+    target_link_libraries(lux PUBLIC 
         opengl32
         gdi32
         user32
@@ -34,7 +34,7 @@ elseif(PLATFORM_LINUX)
     list(FILTER lib_files EXCLUDE REGEX "_win32\\.c$")
     add_library(lux SHARED ${lib_files})
 
-    target_link_libraries(lux PRIVATE
+    target_link_libraries(lux PUBLIC
         wayland-client
         wayland-egl
         EGL
@@ -50,7 +50,7 @@ set_target_properties(lux PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${common_bin_dir}
 )
 
-target_include_directories(lux PRIVATE
+target_include_directories(lux PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/include
 )
 
