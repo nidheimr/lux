@@ -2,6 +2,7 @@
 #include "../debug/debug.h"
 #include "../platform/xdg_linux.h"
 #include "../platform/xdg_deco_linux.h"
+#include "../input/input.h"
 
 #include <sys/time.h>
 #include <unistd.h>
@@ -18,6 +19,9 @@ typedef struct _window_store
     struct wl_registry* wl_registry;
     struct wl_compositor* wl_compositor;
     struct wl_surface* wl_surface;
+
+    struct wl_seat* wl_seat;
+    struct wl_keyboard* wl_keyboard;
 
     struct xdg_wm_base* xdg_wm_base;
     struct xdg_surface* xdg_surface;
@@ -39,6 +43,8 @@ window_store;
 // private source
 // ---------------------------------------------------------------- 
 
+static struct wl_seat_listener wl_listener_seat;
+static struct wl_keyboard_listener wl_listener_keyboard;
 static int xdg_ack = 0;
 
 static void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
@@ -51,7 +57,60 @@ static void wl_registry_global(void* data, struct wl_registry* registry, uint32_
 
     if (strcmp(interface, zxdg_decoration_manager_v1_interface.name) == 0)
         lt_store->window->xdg_deco = wl_registry_bind(registry, name, &zxdg_decoration_manager_v1_interface, version);
+
+    if (strcmp(interface, wl_seat_interface.name) == 0)
+    {
+        lt_store->window->wl_seat = wl_registry_bind(registry, name, &wl_seat_interface, version);
+        wl_seat_add_listener(lt_store->window->wl_seat, &wl_listener_seat, NULL);
+    }
 }
+
+static void wl_registry_global_remove(void* data, struct wl_registry* registry, uint32_t name)
+{}
+
+static void wl_seat_capabilities(void* data, struct wl_seat* seat, enum wl_seat_capability caps)
+{
+    if ((caps & WL_SEAT_CAPABILITY_KEYBOARD) && !lt_store->window->wl_keyboard)
+    {
+        lt_store->window->wl_keyboard = wl_seat_get_keyboard(seat);
+        wl_keyboard_add_listener(lt_store->window->wl_keyboard, &wl_listener_keyboard, NULL);
+    }
+    else if (!(caps & WL_SEAT_CAPABILITY_KEYBOARD) && lt_store->window->wl_keyboard)
+    {
+        wl_keyboard_destroy(lt_store->window->wl_keyboard);
+        lt_store->window->wl_keyboard = NULL;
+    }
+}
+
+static void wl_seat_name(void* data, struct wl_seat* seat, const char* name)
+{}
+
+static void wl_keyboard_key(void* data, struct wl_keyboard* keyboard, uint32_t serial, uint32_t time, uint32_t key, uint32_t state)
+{
+    lx_keycode kc = code_to_key(key);
+
+    if (kc == LX_KEY_UNKNOWN)
+        return;
+
+    change_key_state(kc, state == WL_KEYBOARD_KEY_STATE_PRESSED ? LX_PRESSED : LX_RELEASED);
+}
+
+static void wl_keyboard_keymap(void* data, struct wl_keyboard* keyboard, uint32_t format, int32_t fd, uint32_t size)
+{
+    close(fd);
+}
+
+static void wl_keyboard_enter(void* data, struct wl_keyboard* keyboard, uint32_t serial, struct wl_surface* surface, struct wl_array* keys)
+{}
+
+static void wl_keyboard_leave(void* data, struct wl_keyboard* keyboard, uint32_t serial, struct wl_surface* surface)
+{}
+
+static void wl_keyboard_modifiers(void* data, struct wl_keyboard* keyboard, uint32_t serial, uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group)
+{}
+
+static void wl_keyboard_repeat_info(void* data, struct wl_keyboard* keyboard, int32_t rate, int32_t delay)
+{}
 
 static void xdg_wm_base_ping(void* data, struct xdg_wm_base* wm_base, uint32_t serial)
 {
@@ -89,13 +148,26 @@ static void xdg_toplevel_configure_bounds(void* data, struct xdg_toplevel* tople
 static void xdg_toplevel_wm_capabilities(void* data, struct xdg_toplevel* toplevel, struct wl_array* capabilities)
 {}
 
-static void wl_registry_global_remove(void* data, struct wl_registry* registry, uint32_t name)
-{}
-
 static struct wl_registry_listener wl_listener_registry =
 {
     .global = wl_registry_global,
     .global_remove = wl_registry_global_remove 
+};
+
+static struct wl_seat_listener wl_listener_seat =
+{
+    .capabilities = wl_seat_capabilities,
+    .name = wl_seat_name
+};
+
+static struct wl_keyboard_listener wl_listener_keyboard =
+{
+    .key = wl_keyboard_key,
+    .keymap = wl_keyboard_keymap,
+    .enter = wl_keyboard_enter,
+    .leave = wl_keyboard_leave,
+    .modifiers = wl_keyboard_modifiers,
+    .repeat_info = wl_keyboard_repeat_info
 };
 
 static struct xdg_wm_base_listener xdg_listener_wm_base =
@@ -158,6 +230,12 @@ static int create_wayland_window()
 
 static void destroy_wayland_window()
 {
+    if (lt_store->window->wl_keyboard != NULL)
+        wl_keyboard_destroy(lt_store->window->wl_keyboard);
+
+    if (lt_store->window->wl_seat != NULL)
+        wl_seat_destroy(lt_store->window->wl_seat);
+
     if (lt_store->window->wl_surface != NULL)
         wl_surface_destroy(lt_store->window->wl_surface);
 

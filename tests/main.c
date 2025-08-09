@@ -27,24 +27,18 @@ int main()
 
     create_test_shader();
     create_test_cube();
-    printf("\033[?1049h");
 
     while (lx_is_alive())
     {
         lx_poll_events();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (lx_get_key_state(LX_KEY_SPACE) == LX_PRESSED || lx_get_key_state(LX_KEY_SPACE) == LX_REPEATED)
             draw_test_cube();
-       
-        printf("\033[2J");
-        printf("\033[H");
-        printf("gl version %g\n", lx_get_loaded_gl_version());
-        printf("fps %lf\n", lx_get_fps());
 
         lx_swap_buffers();
     }
 
-    printf("\033[?1049l");
     lx_quit();
     return 0;
 }

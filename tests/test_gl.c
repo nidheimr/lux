@@ -97,7 +97,6 @@ void draw_test_cube()
 {
     if (glUseProgram == NULL) return;
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(shader); 
 
     lx_mat4 perspective = lx_mat4_perspective(45.0f, (float)lx_get_width()/(float)lx_get_height(), 0.1f, 100.0f);
