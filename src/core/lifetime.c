@@ -22,6 +22,7 @@ int lx_init(lx_init_props props)
     GUARD(props.title == NULL, ("failed to initialise lux with a null title"), 0);
     GUARD(props.width > 8192 || props.width <= 0, ("failed to initialise lux with invalid width of %d (0-8192)", props.width), 0);
     GUARD(props.height > 4320 || props.height <= 0, ("failed to initialise lux with invalid height of %d (0-4320)", props.height), 0);
+    GUARD(props.on_key_event == NULL, ("failed to initialise lux with null key event callback"), 0);
     GUARD(props.on_resize == NULL, ("failed to initialise lux with null resize callback"), 0);
     GUARD(props.on_error == NULL, ("failed to initialise lux with null error callback"), 0);
 

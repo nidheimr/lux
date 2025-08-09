@@ -3,11 +3,14 @@
 #include "api.h"
 LX_BEGIN_HEADER
 
+#include "input.h"
+
 // types
 // ----------------------------------------------------------------
 
 typedef void (*lx_on_resize)(int width, int height);
 typedef void (*lx_on_error)(const char* desc);
+typedef void (*lx_on_key_event)(lx_keycode key, lx_keystate state);
 
 typedef struct _lx_init_props
 {
@@ -15,6 +18,7 @@ typedef struct _lx_init_props
     int width;
     int height;
 
+    lx_on_key_event on_key_event;
     lx_on_resize on_resize;
     lx_on_error on_error;
 }

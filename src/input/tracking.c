@@ -1,5 +1,8 @@
 #include "input.h"
+#include "../core/core.h"
 #include "lux/input.h"
+
+#include <stddef.h>
 
 // private source
 // ---------------------------------------------------------------- 
@@ -17,6 +20,9 @@ void change_key_state(lx_keycode key, lx_keystate state)
     if (key_tracker[key] != LX_RELEASED && state == LX_PRESSED)
         return;
 
+    if (lt_props.on_key_event != NULL)
+        lt_props.on_key_event(key, state);
+
     key_tracker[key] = state;
 }
 
@@ -27,7 +33,12 @@ lx_keystate get_key_state(lx_keycode key)
 
     lx_keystate origin = key_tracker[key];
     if (origin == LX_PRESSED)
+    {
+        if (lt_props.on_key_event != NULL)
+            lt_props.on_key_event(key, LX_REPEATED);
+        
         key_tracker[key] = LX_REPEATED;
+    }
 
     return origin;
 }

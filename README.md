@@ -22,5 +22,4 @@ If you want to build the test executable, append `-D BUILD_TEST_EXECUTABLE=1` to
 ## To Do
 
 - Make windows change keystate and trigger a callback set by lx_init_props
-- Wayland just needs to trigger the callback set by lx_init_props
 - Implement querying mouse buttons, scroll, and position and trigger a callback set by lx_init_props
