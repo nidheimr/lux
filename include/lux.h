@@ -3,4 +3,5 @@
 #include "lux/api.h"
 #include "lux/core.h"
 #include "lux/gl.h"
+#include "lux/input.h"
 #include "lux/math.h"

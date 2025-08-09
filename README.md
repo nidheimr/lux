@@ -18,3 +18,8 @@ Assuming you have CMake and a C compiler, you can run the following commands ins
 This will build a dynamic library and and place it inside `./bin/`.
 
 If you want to build the test executable, append `-D BUILD_TEST_EXECUTABLE=1` to the first build step.
+
+## To Do
+
+- Make wayland and windows change keystate and trigger a callback set by lx_init_props
+- Implement querying mouse buttons, scroll, and position and trigger a callback set by lx_init_props

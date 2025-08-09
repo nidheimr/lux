@@ -33,7 +33,8 @@ int main()
     {
         lx_poll_events();
 
-        draw_test_cube();
+        if (lx_get_key_state(LX_KEY_SPACE) == LX_PRESSED || lx_get_key_state(LX_KEY_SPACE) == LX_REPEATED)
+            draw_test_cube();
        
         printf("\033[2J");
         printf("\033[H");

@@ -39,8 +39,6 @@ window_store;
 // private source
 // ---------------------------------------------------------------- 
 
-static struct wl_keyboard_listener wl_listener_keyboard;
-static struct wl_pointer_listener wl_listener_pointer;
 static int xdg_ack = 0;
 
 static void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)

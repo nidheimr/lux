@@ -1,0 +1,18 @@
+#pragma once
+
+#include "lux/input.h"
+
+// tracking
+// ---------------------------------------------------------------- 
+
+// change the state of a key stored in the tracker
+void change_key_state(lx_keycode key, lx_keystate state);
+
+// get the state of a key according to the tracker
+lx_keystate get_key_state(lx_keycode key);
+
+// translation
+// ---------------------------------------------------------------- 
+
+// translates a platform specific code to a key enum
+lx_keycode code_to_key(int code);
