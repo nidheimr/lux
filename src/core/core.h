@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lux/core.h"
+#include "lux/input.h"
 
 // types
 // ---------------------------------------------------------------- 
@@ -11,6 +12,10 @@ typedef struct _global_store
 {
     int alive;
     int gl_version;
+
+    lx_keystate key_tracker[LX_KEY_COUNT];
+    lx_mousepos mouse_tracker;
+    double scroll_amount;
 
     window_store* window;
 }

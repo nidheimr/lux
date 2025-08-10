@@ -22,6 +22,7 @@ typedef struct _window_store
 
     struct wl_seat* wl_seat;
     struct wl_keyboard* wl_keyboard;
+    struct wl_pointer* wl_pointer;
 
     struct xdg_wm_base* xdg_wm_base;
     struct xdg_surface* xdg_surface;
@@ -45,6 +46,8 @@ window_store;
 
 static struct wl_seat_listener wl_listener_seat;
 static struct wl_keyboard_listener wl_listener_keyboard;
+static struct wl_pointer_listener wl_listener_pointer;
+
 static int xdg_ack = 0;
 
 static void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
@@ -70,15 +73,16 @@ static void wl_registry_global_remove(void* data, struct wl_registry* registry, 
 
 static void wl_seat_capabilities(void* data, struct wl_seat* seat, enum wl_seat_capability caps)
 {
-    if ((caps & WL_SEAT_CAPABILITY_KEYBOARD) && !lt_store->window->wl_keyboard)
+    if (caps & WL_SEAT_CAPABILITY_KEYBOARD)
     {
         lt_store->window->wl_keyboard = wl_seat_get_keyboard(seat);
         wl_keyboard_add_listener(lt_store->window->wl_keyboard, &wl_listener_keyboard, NULL);
     }
-    else if (!(caps & WL_SEAT_CAPABILITY_KEYBOARD) && lt_store->window->wl_keyboard)
+
+    if (caps & WL_SEAT_CAPABILITY_POINTER)
     {
-        wl_keyboard_destroy(lt_store->window->wl_keyboard);
-        lt_store->window->wl_keyboard = NULL;
+        lt_store->window->wl_pointer = wl_seat_get_pointer(seat);
+        wl_pointer_add_listener(lt_store->window->wl_pointer, &wl_listener_pointer, NULL);
     }
 }
 
@@ -110,6 +114,53 @@ static void wl_keyboard_modifiers(void* data, struct wl_keyboard* keyboard, uint
 {}
 
 static void wl_keyboard_repeat_info(void* data, struct wl_keyboard* keyboard, int32_t rate, int32_t delay)
+{}
+
+static void wl_pointer_motion(void* data, struct wl_pointer* pointer, uint32_t time, wl_fixed_t sx, wl_fixed_t sy)
+{
+    update_mouse_position(wl_fixed_to_double(sx), wl_fixed_to_double(sy));
+}
+
+static void wl_pointer_button(void* data, struct wl_pointer* pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
+{
+    lx_keycode kc = code_to_key(button);
+
+    if (kc == LX_KEY_UNKNOWN)
+        return;
+
+    change_key_state(kc, state == WL_POINTER_BUTTON_STATE_PRESSED ? LX_PRESSED : LX_RELEASED);
+}
+
+static void wl_pointer_axis(void* data, struct wl_pointer* pointer, uint32_t time, uint32_t axis, wl_fixed_t value)
+{
+    if (axis != WL_POINTER_AXIS_VERTICAL_SCROLL)
+        return;
+
+    update_mouse_scroll(wl_fixed_to_double(value));
+}
+
+static void wl_pointer_enter(void* data, struct wl_pointer* pointer, uint32_t serial, struct wl_surface* surface, wl_fixed_t sx, wl_fixed_t sy)
+{}
+
+static void wl_pointer_leave(void* data, struct wl_pointer* pointer, uint32_t serial, struct wl_surface* surface)
+{}
+
+static void wl_pointer_frame(void* data, struct wl_pointer* pointer)
+{}
+
+static void wl_pointer_axis_source(void* data, struct wl_pointer* pointer, uint32_t axis_source)
+{}
+
+static void wl_pointer_axis_stop(void* data, struct wl_pointer* pointer, uint32_t time, uint32_t axis)
+{}
+
+static void wl_pointer_axis_discrete(void* data, struct wl_pointer* pointer, uint32_t axis, int32_t discrete)
+{}
+
+static void wl_pointer_axis_value120(void* data, struct wl_pointer* pointer, uint32_t axis, int32_t value120)
+{}
+
+static void wl_pointer_axis_relative_direction(void* data, struct wl_pointer* wl_pointer, uint32_t axis, uint32_t direction)
 {}
 
 static void xdg_wm_base_ping(void* data, struct xdg_wm_base* wm_base, uint32_t serial)
@@ -168,6 +219,21 @@ static struct wl_keyboard_listener wl_listener_keyboard =
     .leave = wl_keyboard_leave,
     .modifiers = wl_keyboard_modifiers,
     .repeat_info = wl_keyboard_repeat_info
+};
+
+static struct wl_pointer_listener wl_listener_pointer =
+{
+    .enter = wl_pointer_enter,
+    .leave = wl_pointer_leave,
+    .motion = wl_pointer_motion,
+    .button = wl_pointer_button,
+    .axis = wl_pointer_axis,
+    .frame = wl_pointer_frame,
+    .axis_source = wl_pointer_axis_source,
+    .axis_stop = wl_pointer_axis_stop,
+    .axis_discrete = wl_pointer_axis_discrete,
+    .axis_value120 = wl_pointer_axis_value120,
+    .axis_relative_direction = wl_pointer_axis_relative_direction
 };
 
 static struct xdg_wm_base_listener xdg_listener_wm_base =
@@ -230,6 +296,9 @@ static int create_wayland_window()
 
 static void destroy_wayland_window()
 {
+    if (lt_store->window->wl_pointer != NULL)
+        wl_pointer_destroy(lt_store->window->wl_pointer);
+
     if (lt_store->window->wl_keyboard != NULL)
         wl_keyboard_destroy(lt_store->window->wl_keyboard);
 
@@ -294,6 +363,9 @@ static int create_xdg_shell()
 
 static void destroy_xdg_shell()
 {
+    if (lt_store->window->xdg_deco != NULL)
+        zxdg_decoration_manager_v1_destroy(lt_store->window->xdg_deco);
+
     if (lt_store->window->xdg_toplevel != NULL)
         xdg_toplevel_destroy(lt_store->window->xdg_toplevel);
 
@@ -430,6 +502,8 @@ void window_poll_events()
     lt_store->window->last_frame_time = lt_store->window->cur_frame_time;
     lt_store->window->cur_frame_time = get_time();
     lt_store->window->delta_time = lt_store->window->cur_frame_time - lt_store->window->last_frame_time;
+
+    update_mouse_scroll(get_mouse_scroll() * -1);
 
     wl_display_dispatch_pending(lt_store->window->wl_display);
     wl_display_flush(lt_store->window->wl_display);

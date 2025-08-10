@@ -107,7 +107,11 @@ void draw_test_cube()
 
     lx_mat4 model = lx_mat4_identity();
     model = lx_mat4_translate(model, (lx_vec3){ 0.0f, 0.0f, -5.0f });
-    model = lx_mat4_rotate(model, (lx_vec3){ 0.0f, 1.0f, 0.0f }, 45.0f * lx_get_time());
+
+    static double rot = 0;
+    rot += 45.0f * lx_get_mouse_scroll() * lx_get_delta();
+    
+    model = lx_mat4_rotate(model, (lx_vec3){ 0.0f, 1.0f, 0.0f }, rot);
     glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, model.m);
 
     glBindVertexArray(vao);

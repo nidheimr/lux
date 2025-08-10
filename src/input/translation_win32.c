@@ -123,6 +123,11 @@ static lx_keycode translation_table[HIGHEST_KEY_NUMERICAL_VALUE] =
     [VK_SUBTRACT] = LX_KEY_KPMINUS,
     [VK_MULTIPLY] = LX_KEY_KPASTERISK,
     [VK_DIVIDE] = LX_KEY_KPSLASH,
+
+    // mouse
+    [VK_LBUTTON] = LX_MOUSE_LEFT,
+    [VK_RBUTTON] = LX_MOUSE_RIGHT,
+    [VK_MBUTTON] = LX_MOUSE_MIDDLE
 };
 
 

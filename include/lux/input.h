@@ -6,9 +6,16 @@ LX_BEGIN_HEADER
 // types
 // -----------------------------------------------------------------
 
+typedef struct _lx_mousepos
+{
+    double x;
+    double y;
+}
+lx_mousepos;
+
 typedef enum _lx_keystate
 {
-    LX_RELEASED,
+    LX_RELEASED = 0,
     LX_PRESSED,
     LX_REPEATED
 }
@@ -132,7 +139,11 @@ typedef enum _lx_keycode
     LX_KEY_KPMINUS,
     LX_KEY_KPASTERISK,
     LX_KEY_KPSLASH,
-    LX_KEY_KPENTER,
+
+    // mouse
+    LX_MOUSE_LEFT,
+    LX_MOUSE_RIGHT,
+    LX_MOUSE_MIDDLE,
 
     LX_KEY_COUNT
 }
@@ -142,7 +153,7 @@ lx_keycode;
 // -----------------------------------------------------------------
 
 /**
- * @brief Returns the state of the given key.
+ * @brief Returns the state of the given key or mouse button.
  *
  * If the key is not pressed, then `LX_RELEASED` is returned.
  *
@@ -156,5 +167,20 @@ lx_keycode;
  * @return An enum representing the state of the key.
  */
 lx_keystate lx_get_key_state(lx_keycode key);
+
+/**
+ * @brief Returns the current position of the mouse cursor, anchored to the
+ * top left of the window.
+ *
+ * @return A struct containing the x,y position of the mouse cursor.
+ */
+lx_mousepos lx_get_mouse_pos();
+
+/**
+ * @brief Returns the total amount of scrolling done since the last event poll.
+ *
+ * @return The buffered scroll amount since the last event poll.
+ */
+double lx_get_mouse_scroll();
 
 LX_END_HEADER

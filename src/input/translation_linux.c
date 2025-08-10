@@ -3,7 +3,7 @@
 
 #include <linux/input-event-codes.h>
 
-#define HIGHEST_KEY_NUMERICAL_VALUE 128
+#define HIGHEST_KEY_NUMERICAL_VALUE 512
 
 // private source
 // ---------------------------------------------------------------- 
@@ -124,7 +124,12 @@ static lx_keycode translation_table[HIGHEST_KEY_NUMERICAL_VALUE] =
     [KEY_KPMINUS] = LX_KEY_KPMINUS,
     [KEY_KPASTERISK] = LX_KEY_KPASTERISK,
     [KEY_KPSLASH] = LX_KEY_KPSLASH,
-    [KEY_KPENTER] = LX_KEY_KPENTER
+    [KEY_KPENTER] = LX_KEY_ENTER,
+
+    // mouse
+    [BTN_LEFT] = LX_MOUSE_LEFT,
+    [BTN_RIGHT] = LX_MOUSE_RIGHT,
+    [BTN_MIDDLE] = LX_MOUSE_MIDDLE
 };
 
 // private header
