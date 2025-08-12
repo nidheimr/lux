@@ -365,7 +365,7 @@ static int create_xdg_shell()
     }
 
     wl_surface_commit(lt_store->window->wl_surface);
-    while (xdg_ack == 0)
+    while (lt_store->window->xdg_ack == 0)
         wl_display_dispatch(lt_store->window->wl_display);
 
     return 1;
