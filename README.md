@@ -18,7 +18,3 @@ Assuming you have CMake and a C compiler, you can run the following commands ins
 This will build a dynamic library and and place it inside `./bin/`.
 
 If you want to build the test executable, append `-D BUILD_TEST_EXECUTABLE=1` to the first build step.
-
-## To Do
-
-- Make windows update input events (key, mouse button, mouse position, mouse scroll (remember to reset buffer in poll events))

@@ -38,6 +38,9 @@ typedef struct _window_store
     double last_frame_time;
     double cur_frame_time;
     double delta_time;
+
+    int xdg_ack;
+    int axis_handled;
 }
 window_store;
 
@@ -47,8 +50,6 @@ window_store;
 static struct wl_seat_listener wl_listener_seat;
 static struct wl_keyboard_listener wl_listener_keyboard;
 static struct wl_pointer_listener wl_listener_pointer;
-
-static int xdg_ack = 0;
 
 static void wl_registry_global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version)
 {
@@ -133,10 +134,25 @@ static void wl_pointer_button(void* data, struct wl_pointer* pointer, uint32_t s
 
 static void wl_pointer_axis(void* data, struct wl_pointer* pointer, uint32_t time, uint32_t axis, wl_fixed_t value)
 {
-    if (axis != WL_POINTER_AXIS_VERTICAL_SCROLL)
+    if (axis != WL_POINTER_AXIS_VERTICAL_SCROLL || lt_store->window->axis_handled == 1)
         return;
 
-    update_mouse_scroll(wl_fixed_to_double(value));
+    update_mouse_scroll(wl_fixed_to_double(value) / 15.0);
+    lt_store->window->axis_handled = 1;
+}
+
+static void wl_pointer_axis_discrete(void* data, struct wl_pointer* pointer, uint32_t axis, int32_t discrete)
+{
+    if (axis != WL_POINTER_AXIS_VERTICAL_SCROLL || lt_store->window->axis_handled == 1)
+        return;
+
+    update_mouse_scroll((double)discrete);
+    lt_store->window->axis_handled = 1;
+}
+
+static void wl_pointer_frame(void* data, struct wl_pointer* pointer)
+{
+    lt_store->window->axis_handled = 0;
 }
 
 static void wl_pointer_enter(void* data, struct wl_pointer* pointer, uint32_t serial, struct wl_surface* surface, wl_fixed_t sx, wl_fixed_t sy)
@@ -145,16 +161,10 @@ static void wl_pointer_enter(void* data, struct wl_pointer* pointer, uint32_t se
 static void wl_pointer_leave(void* data, struct wl_pointer* pointer, uint32_t serial, struct wl_surface* surface)
 {}
 
-static void wl_pointer_frame(void* data, struct wl_pointer* pointer)
-{}
-
 static void wl_pointer_axis_source(void* data, struct wl_pointer* pointer, uint32_t axis_source)
 {}
 
 static void wl_pointer_axis_stop(void* data, struct wl_pointer* pointer, uint32_t time, uint32_t axis)
-{}
-
-static void wl_pointer_axis_discrete(void* data, struct wl_pointer* pointer, uint32_t axis, int32_t discrete)
 {}
 
 static void wl_pointer_axis_value120(void* data, struct wl_pointer* pointer, uint32_t axis, int32_t value120)
@@ -171,7 +181,7 @@ static void xdg_wm_base_ping(void* data, struct xdg_wm_base* wm_base, uint32_t s
 static void xdg_surface_configure(void* data, struct xdg_surface* surface, uint32_t serial)
 {
     xdg_surface_ack_configure(surface, serial);
-    xdg_ack = 1;
+    lt_store->window->xdg_ack = 1;
 }
 
 static void xdg_toplevel_close(void* data, struct xdg_toplevel* toplevel)
@@ -189,7 +199,7 @@ static void xdg_toplevel_configure(void* data, struct xdg_toplevel* toplevel, in
 
     wl_egl_window_resize(lt_store->window->egl_window, width, height, 0, 0);
 
-    if (lt_props.on_resize != NULL)
+    if (lt_props.on_resize != NULL && lt_store->gl_version > 0)
         lt_props.on_resize(width, height);
 }
 
@@ -228,10 +238,10 @@ static struct wl_pointer_listener wl_listener_pointer =
     .motion = wl_pointer_motion,
     .button = wl_pointer_button,
     .axis = wl_pointer_axis,
+    .axis_discrete = wl_pointer_axis_discrete,
     .frame = wl_pointer_frame,
     .axis_source = wl_pointer_axis_source,
     .axis_stop = wl_pointer_axis_stop,
-    .axis_discrete = wl_pointer_axis_discrete,
     .axis_value120 = wl_pointer_axis_value120,
     .axis_relative_direction = wl_pointer_axis_relative_direction
 };
@@ -503,7 +513,7 @@ void window_poll_events()
     lt_store->window->cur_frame_time = get_time();
     lt_store->window->delta_time = lt_store->window->cur_frame_time - lt_store->window->last_frame_time;
 
-    update_mouse_scroll(get_mouse_scroll() * -1);
+    reset_mouse_scroll();
 
     wl_display_dispatch_pending(lt_store->window->wl_display);
     wl_display_flush(lt_store->window->wl_display);

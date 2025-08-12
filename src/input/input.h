@@ -20,6 +20,9 @@ lx_mousepos get_mouse_position();
 // update mouse scroll amount
 void update_mouse_scroll(double scroll);
 
+// resets the scroll buffer
+void reset_mouse_scroll();
+
 // get mouse scroll amount
 double get_mouse_scroll();
 

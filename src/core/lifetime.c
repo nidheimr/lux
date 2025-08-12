@@ -4,6 +4,7 @@
 #include "../gl/gl.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 // private header 
 // ---------------------------------------------------------------- 
@@ -34,6 +35,10 @@ int lx_init(lx_init_props props)
 
     if (!window_create() || !gl_load())
         return 1;
+
+    memset(lt_store->key_tracker, LX_RELEASED, sizeof(lt_store->key_tracker));
+    lt_store->mouse_tracker = (lx_mousepos){ 0, 0 };
+    lt_store->scroll_amount = 0;
 
     lt_store->alive = 1;
     return 0;

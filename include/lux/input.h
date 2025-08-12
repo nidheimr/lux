@@ -166,7 +166,7 @@ lx_keycode;
  *
  * @return An enum representing the state of the key.
  */
-lx_keystate lx_get_key_state(lx_keycode key);
+LX_API lx_keystate lx_get_key_state(lx_keycode key);
 
 /**
  * @brief Returns the current position of the mouse cursor, anchored to the
@@ -174,13 +174,13 @@ lx_keystate lx_get_key_state(lx_keycode key);
  *
  * @return A struct containing the x,y position of the mouse cursor.
  */
-lx_mousepos lx_get_mouse_pos();
+LX_API lx_mousepos lx_get_mouse_pos();
 
 /**
  * @brief Returns the total amount of scrolling done since the last event poll.
  *
  * @return The buffered scroll amount since the last event poll.
  */
-double lx_get_mouse_scroll();
+LX_API double lx_get_mouse_scroll();
 
 LX_END_HEADER

@@ -1,5 +1,6 @@
 #include "core.h"
 #include "../debug/debug.h"
+#include "../input/input.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -35,15 +36,54 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM 
 {
     switch (umsg)
     {
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+        change_key_state(code_to_key((int)wparam), LX_PRESSED);
+        break;
+
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+        change_key_state(code_to_key((int)wparam), LX_RELEASED);
+        break;
+
+    case WM_LBUTTONDOWN:
+        change_key_state(LX_MOUSE_LEFT, LX_PRESSED);
+        break;
+
+    case WM_LBUTTONUP:
+        change_key_state(LX_MOUSE_LEFT, LX_RELEASED);
+        break;
+
+    case WM_RBUTTONDOWN:
+        change_key_state(LX_MOUSE_RIGHT, LX_PRESSED);
+        break;
+    
+    case WM_RBUTTONUP:
+        change_key_state(LX_MOUSE_RIGHT, LX_RELEASED);
+        break;
+
+    case WM_MBUTTONDOWN:
+        change_key_state(LX_MOUSE_MIDDLE, LX_PRESSED);
+        break;
+    
+    case WM_MBUTTONUP:
+        change_key_state(LX_MOUSE_MIDDLE, LX_RELEASED);
+        break;
+
+    case WM_MOUSEWHEEL:
+        update_mouse_scroll(GET_WHEEL_DELTA_WPARAM(wparam) / 120.0);
+        break;
+   
+    case WM_MOUSEMOVE:
+        update_mouse_position(((double)(short)LOWORD(lparam)), ((double)(short)HIWORD(lparam)));
+        break;
+
     case WM_SIZE:
-        int width = LOWORD(lparam);
-        int height = HIWORD(lparam);
-       
-        lt_props.width = width;
-        lt_props.height = height;
+        lt_props.width = LOWORD(lparam);
+        lt_props.height = HIWORD(lparam);
 
         if (lt_props.on_resize != NULL && lt_store->gl_version > 0)
-            lt_props.on_resize(width, height);
+            lt_props.on_resize(lt_props.width, lt_props.height);
 
         break;
 
@@ -252,6 +292,8 @@ void window_poll_events()
     lt_store->window->last_frame_time = lt_store->window->cur_frame_time;
     lt_store->window->cur_frame_time = get_time();
     lt_store->window->delta_time = lt_store->window->cur_frame_time - lt_store->window->last_frame_time;
+
+    reset_mouse_scroll(); 
 
     MSG msg;
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

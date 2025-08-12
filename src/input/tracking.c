@@ -52,6 +52,11 @@ void update_mouse_scroll(double scroll)
     lt_store->scroll_amount += scroll;
 }
 
+void reset_mouse_scroll()
+{
+    lt_store->scroll_amount = 0;
+}
+
 double get_mouse_scroll()
 {
     return lt_store->scroll_amount;
