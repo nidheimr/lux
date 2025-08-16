@@ -13,6 +13,9 @@ LX_BEGIN_HEADER
  * The error callback is set during initialisation, if set to NULL then all
  * calls to this function are ignored.
  *
+ * Absolutely do not call this function in the error callback itself, you will
+ * create endless recursion. No good can come of that.
+ *
  * @param fmt The printf-style format string.
  * @param ... The arguments to the format string.
  */
