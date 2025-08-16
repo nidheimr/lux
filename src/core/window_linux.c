@@ -269,14 +269,14 @@ static int create_wayland_window()
     lt_store->window->wl_display = wl_display_connect(NULL);
     if (!lt_store->window->wl_display)
     {
-        emit_error("failed to connect to wayland display");
+        lx_error("failed to connect to wayland display");
         return 0;
     }
 
     lt_store->window->wl_registry = wl_display_get_registry(lt_store->window->wl_display);
     if (!lt_store->window->wl_registry)
     {
-        emit_error("failed to get wayland display registry");
+        lx_error("failed to get wayland display registry");
         return 0;
     }
 
@@ -284,20 +284,20 @@ static int create_wayland_window()
 
     if (wl_display_roundtrip(lt_store->window->wl_display) < 0)
     {
-        emit_error("failed to complete wayland round trip");
+        lx_error("failed to complete wayland round trip");
         return 0;
     }
 
     if (!lt_store->window->wl_compositor)
     {
-        emit_error("failed to get wayland compositor");
+        lx_error("failed to get wayland compositor");
         return 0;
     }
 
     lt_store->window->wl_surface = wl_compositor_create_surface(lt_store->window->wl_compositor);
     if (!lt_store->window->wl_surface)
     {
-        emit_error("failed to create wayland surface");
+        lx_error("failed to create wayland surface");
         return 0;
     }
 
@@ -332,7 +332,7 @@ static int create_xdg_shell()
 {
     if (!lt_store->window->xdg_wm_base)
     {
-        emit_error("failed to get xdg wm base");
+        lx_error("failed to get xdg wm base");
         return 0;
     }
 
@@ -341,7 +341,7 @@ static int create_xdg_shell()
     lt_store->window->xdg_surface = xdg_wm_base_get_xdg_surface(lt_store->window->xdg_wm_base, lt_store->window->wl_surface);
     if (!lt_store->window->xdg_surface)
     {
-        emit_error("failed to create xdg surface");
+        lx_error("failed to create xdg surface");
         return 0;
     }
 
@@ -350,7 +350,7 @@ static int create_xdg_shell()
     lt_store->window->xdg_toplevel = xdg_surface_get_toplevel(lt_store->window->xdg_surface);
     if (!lt_store->window->xdg_toplevel)
     {
-        emit_error("failed to create xdg toplevel");
+        lx_error("failed to create xdg toplevel");
         return 0;
     }
 
@@ -391,13 +391,13 @@ static int create_egl_surface()
     lt_store->window->egl_display = eglGetDisplay((EGLNativeDisplayType)lt_store->window->wl_display); 
     if (lt_store->window->egl_display == EGL_NO_DISPLAY)
     {
-        emit_error("failed to create egl display");
+        lx_error("failed to create egl display");
         return 0;
     }
 
     if (eglInitialize(lt_store->window->egl_display, NULL, NULL) != EGL_TRUE)
     {
-        emit_error("failed to initialise egl");
+        lx_error("failed to initialise egl");
         return 0;
     }
 
@@ -413,7 +413,7 @@ static int create_egl_surface()
 
     if (eglChooseConfig(lt_store->window->egl_display, attribs, &config, 1, &num_configs) != EGL_TRUE)
     {
-        emit_error("failed to choose egl config");
+        lx_error("failed to choose egl config");
         return 0;
     }
 
@@ -423,21 +423,21 @@ static int create_egl_surface()
     lt_store->window->egl_context = eglCreateContext(lt_store->window->egl_display, config, EGL_NO_CONTEXT, context_attribs);
     if (!lt_store->window->egl_context)
     {
-        emit_error("failed to create egl context");
+        lx_error("failed to create egl context");
         return 0;
     }
 
     lt_store->window->egl_window = wl_egl_window_create(lt_store->window->wl_surface, lt_props.width, lt_props.height);
     if (!lt_store->window->egl_window)
     {
-        emit_error("failed to create egl window");
+        lx_error("failed to create egl window");
         return 0;
     }
 
     lt_store->window->egl_surface = eglCreateWindowSurface(lt_store->window->egl_display, config, (EGLNativeWindowType)lt_store->window->egl_window, NULL);
     if (lt_store->window->egl_surface == EGL_NO_SURFACE)
     {
-        emit_error("failed to create egl surface");
+        lx_error("failed to create egl surface");
         return 0;
     }
 
@@ -445,7 +445,7 @@ static int create_egl_surface()
 
     if (eglSwapInterval(lt_store->window->egl_display, 1) == EGL_FALSE)
     {
-        emit_error("failed to enable vertical sync");
+        lx_error("failed to enable vertical sync");
     }
 
     return 1;
@@ -481,7 +481,7 @@ int window_create()
     lt_store->window = malloc(sizeof(window_store));
     if (lt_store->window == NULL)
     {
-        emit_error("failed to allocate internal window store");
+        lx_error("failed to allocate internal window store");
         return 0;
     }
 

@@ -1,6 +1,6 @@
 #include "lux/gl.h"
+#include "lux/debug.h"
 #include "gl.h"
-#include "../debug/debug.h"
 #include "../core/core.h"
 
 #include <stdio.h>
@@ -1509,14 +1509,14 @@ int gl_load()
     lx_glGetString = (PFNGLGETSTRINGPROC) load_proc("glGetString");
     if (!lx_glGetString)
     {
-        emit_error("failed to load required gl functions for a version check");
+        lx_error("failed to load required gl functions for a version check");
         return 0;
     }
     
     lt_store->gl_version = query_supported_gl_version(); 
     if (lt_store->gl_version == 0)
     {
-        emit_error("failed to query supported opengl version");
+        lx_error("failed to query supported opengl version");
         return 0;
     }
     

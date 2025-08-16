@@ -33,8 +33,6 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         lx_poll_events();
 
-        printf("mouse x,y: %lf,%lf\n", lx_get_mouse_pos().x, lx_get_mouse_pos().y);
-
         if (lx_get_key_state(LX_KEY_SPACE) == LX_PRESSED)
             draw = !draw;
         

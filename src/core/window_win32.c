@@ -107,7 +107,7 @@ static int create_w32_class()
 
     if (RegisterClass(&lt_store->window->w32_class) == 0)
     {
-        emit_error("failed to register win32 class");
+        lx_error("failed to register win32 class");
         return 0;
     }
 
@@ -125,7 +125,7 @@ static int create_w32_window()
 
     if (lt_store->window->w32_window == NULL)
     {
-        emit_error("failed to create win32 window");
+        lx_error("failed to create win32 window");
         return 0;
     }
 
@@ -169,7 +169,7 @@ static int create_gl_context()
     HGLRC temp_ctx = wglCreateContext(lt_store->window->w32_dc);
     if (temp_ctx == NULL)
     {
-        emit_error("failed to create temporary opengl context for version querying");
+        lx_error("failed to create temporary opengl context for version querying");
         return 0;
     }
 
@@ -185,14 +185,14 @@ static int create_gl_context()
 
     if (major == 0)
     {
-        emit_error("failed to determine highest supported opengl version");
+        lx_error("failed to determine highest supported opengl version");
         return 0;
     }
 
     PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC) wglGetProcAddress("wglCreateContextAttribsARB");
     if (wglCreateContextAttribsARB == NULL)
     {
-        emit_error("failed to load wgl arb context creation function");
+        lx_error("failed to load wgl arb context creation function");
         return 0;
     }
 
@@ -207,7 +207,7 @@ static int create_gl_context()
     lt_store->window->w32_gl_ctx = wglCreateContextAttribsARB(lt_store->window->w32_dc, 0, context_attribs);
     if (lt_store->window->w32_gl_ctx == NULL)
     {
-        emit_error("failed to create opengl context");
+        lx_error("failed to create opengl context");
         return 0;
     }
 
@@ -217,7 +217,7 @@ static int create_gl_context()
     PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT");
     if (!wglSwapIntervalEXT)
     {
-        emit_error("failed to enable vertical sync");
+        lx_error("failed to enable vertical sync");
         return 0;
     }
 
@@ -261,7 +261,7 @@ int window_create()
     lt_store->window = malloc(sizeof(window_store));
     if (lt_store->window == NULL)
     {
-        emit_error("failed to allocate internal window store");
+        lx_error("failed to allocate internal window store");
         return 0;
     }
 

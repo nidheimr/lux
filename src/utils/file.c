@@ -1,6 +1,8 @@
 #include "lux/utils.h"
+#include "lux/debug.h"
 #include "../debug/debug.h"
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,16 +11,18 @@
 
 char* lx_read_file(const char* file)
 {
+    GUARD(file == NULL, ("could not open NULL file for reading"), NULL);
+
     FILE* fp = fopen(file, "rb");
     if (!fp)
     {
-        emit_error("failed to open file %s", file); 
+        lx_error("failed to open file %s", file); 
         return NULL;
     }
 
     if (fseek(fp, 0, SEEK_END) != 0)
     {
-        emit_error("failed to navigate file %s", file);
+        lx_error("failed to navigate file %s", file);
         fclose(fp);
         return NULL;
     }
@@ -26,7 +30,7 @@ char* lx_read_file(const char* file)
     long size = ftell(fp);
     if (size < 0)
     {
-        emit_error("failed to determine size of file %s", file);
+        lx_error("failed to determine size of file %s", file);
         fclose(fp);
         return NULL;
     }
@@ -36,7 +40,7 @@ char* lx_read_file(const char* file)
     char* buf = malloc(size + 1);
     if (!buf)
     {
-        emit_error("failed to allocate space for file %s", file);
+        lx_error("failed to allocate space for file %s", file);
         fclose(fp);
         return NULL;
     }
@@ -44,7 +48,7 @@ char* lx_read_file(const char* file)
     size_t bytes_read = fread(buf, 1, size, fp);
     if (bytes_read != (size_t)size)
     {
-        emit_error("failed to read file %s", file);
+        lx_error("failed to read file %s", file);
         free(buf);
         fclose(fp);
         return NULL;

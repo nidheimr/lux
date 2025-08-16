@@ -29,7 +29,7 @@ int lx_init(lx_init_props props)
     lt_store = malloc(sizeof(global_store));
     if (lt_store == NULL)
     {
-        emit_error("failed to allocate internal store");
+        lx_error("failed to allocate internal store");
         return 1;
     }
 

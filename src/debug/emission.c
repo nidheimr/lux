@@ -1,15 +1,15 @@
-#include "debug.h"
+#include "lux/debug.h"
 #include "../core/core.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 
-// private header 
+// public header 
 // ---------------------------------------------------------------- 
 
-void emit_error(const char* fmt, ...)
+void lx_error(const char* fmt, ...)
 {
-    if (lt_props.on_error == NULL)
+    if (fmt == NULL || lt_props.on_error == NULL)
         return;
 
     va_list args;
